@@ -38,4 +38,11 @@ public class ChessPosition {
     public boolean equals(ChessPosition other){
         return row == other.row && col == other.col;
     }
+
+    /**
+     * @Override toString
+     */
+    public String toString(){
+        return "(" + row + "," + col + ")";
+    }
 }
