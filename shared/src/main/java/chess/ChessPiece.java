@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -51,19 +52,18 @@ public class ChessPiece {
         return pieceType.toString();
     }
 
-    /**
-     * @override equals
-     */
-    public boolean equals(ChessPiece other) {
-        System.out.println(pieceColor + " " + pieceType + " " + other.pieceColor + " " + other.pieceType);
-        return pieceColor.toString().equals(other.getTeamColor().toString()) && pieceType.toString().equals(other.getPieceType().toString());
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && pieceType == that.pieceType;
     }
 
-    /**
-     * @Override hashCode
-     */
+    @Override
     public int hashCode() {
-        return this.toString().hashCode();
+        return Objects.hash(pieceColor, pieceType);
     }
 
     /**
@@ -83,9 +83,9 @@ public class ChessPiece {
         if (pieceType == PieceType.BISHOP) {
             return BishopMovesCalculator.calculate(board, myPosition);
         }
-        if (pieceType == PieceType.QUEEN) {
-            return RookMovesCalculator.calculate(board, myPosition).addAll(BishopMovesCalculator.calculate(board, myPosition));
-        }
+        //if (pieceType == PieceType.QUEEN) {
+            //return RookMovesCalculator.calculate(board, myPosition).addAll(BishopMovesCalculator.calculate(board, myPosition));
+        //}
         if (pieceType == PieceType.KING) {
             return KingMovesCalculator.calculate(board, myPosition);
         }

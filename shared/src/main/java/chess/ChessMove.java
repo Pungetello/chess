@@ -56,6 +56,7 @@ public class ChessMove {
     /**
      * @Override hashCode
      */
+    @Override
     public int hashCode(){
         return this.toString().hashCode();
     }
@@ -63,7 +64,8 @@ public class ChessMove {
     /**
      * @override equals
      */
-    public boolean equals(ChessMove other){
+    @Override
+    public boolean equals(Object other){
         return this.toString().equals(other.toString());
     }
 }
