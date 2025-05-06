@@ -45,4 +45,13 @@ public class ChessPosition {
     public String toString(){
         return "(" + row + "," + col + ")";
     }
+
+    /**
+     * @Override hashCode
+     */
+    public int hashCode(){
+        int hash = 7;
+        hash = 31*hash + row + col;
+        return hash;
+    }
 }

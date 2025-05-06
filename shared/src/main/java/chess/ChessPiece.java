@@ -60,6 +60,13 @@ public class ChessPiece {
     }
 
     /**
+     * @Override hashCode
+     */
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
+    /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
@@ -75,6 +82,12 @@ public class ChessPiece {
         }
         if (pieceType == PieceType.BISHOP) {
             return BishopMovesCalculator.calculate(board, myPosition);
+        }
+        if (pieceType == PieceType.QUEEN) {
+            return RookMovesCalculator.calculate(board, myPosition).addAll(BishopMovesCalculator.calculate(board, myPosition));
+        }
+        if (pieceType == PieceType.KING) {
+            return KingMovesCalculator.calculate(board, myPosition);
         }
         return null;
     }
