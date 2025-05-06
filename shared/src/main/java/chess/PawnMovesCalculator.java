@@ -12,9 +12,9 @@ public class PawnMovesCalculator {
         //add two-space on first turn rule??
 
         iterator = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
-        if (iterator.getRow() <= 7 && board.getBoard()[iterator.getRow()][iterator.getColumn()] == null) {
+        if (iterator.getRow() <= 7 && board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null) {
             moves.add(new ChessMove(myPosition, iterator, null));
-        } else if (iterator.getRow() == 8 && board.getBoard()[iterator.getRow()][iterator.getColumn()] == null) {
+        } else if (iterator.getRow() == 8 && board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null) {
             moves.add(new ChessMove(myPosition, iterator, ChessPiece.PieceType.QUEEN));
             moves.add(new ChessMove(myPosition, iterator, ChessPiece.PieceType.ROOK));
             moves.add(new ChessMove(myPosition, iterator, ChessPiece.PieceType.KNIGHT));

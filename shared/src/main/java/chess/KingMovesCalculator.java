@@ -13,7 +13,7 @@ public class KingMovesCalculator {
 
         for(int[] possibleMove : possibleMoves) {
         iterator = new ChessPosition(myPosition.getRow()+possibleMove[0], myPosition.getColumn()+possibleMove[1]);
-        if (iterator.getRow() <= 8 && iterator.getColumn() <= 8 && iterator.getRow() > 0 && iterator.getColumn() > 0 && board.getBoard()[iterator.getRow()][iterator.getColumn()] == null) {
+        if (iterator.getRow() <= 8 && iterator.getColumn() <= 8 && iterator.getRow() > 0 && iterator.getColumn() > 0 && board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null) {
             moves.add(new ChessMove(myPosition, iterator, null));
         }
 }

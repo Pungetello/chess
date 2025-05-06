@@ -13,7 +13,7 @@ public class RookMovesCalculator {
             if(iterator.getRow() > 8){
                 break;
             }
-            if(board.getBoard()[iterator.getRow()][iterator.getColumn()] != null){
+            if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] != null){
                 break;
             }
             moves.add(new ChessMove(myPosition, iterator, null));
@@ -24,7 +24,7 @@ public class RookMovesCalculator {
             if(iterator.getRow() < 1){
                 break;
             }
-            if(board.getBoard()[iterator.getRow()][iterator.getColumn()] != null){
+            if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] != null){
                 break;
             }
             moves.add(new ChessMove(myPosition, iterator, null));
@@ -35,7 +35,7 @@ public class RookMovesCalculator {
             if(iterator.getColumn() > 8){
                 break;
             }
-            if(board.getBoard()[iterator.getRow()][iterator.getColumn()] != null){
+            if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] != null){
                 break;
             }
             moves.add(new ChessMove(myPosition, iterator, null));
@@ -46,7 +46,7 @@ public class RookMovesCalculator {
             if(iterator.getColumn() < 1){
                 break;
             }
-            if(board.getBoard()[iterator.getRow()][iterator.getColumn()] != null){
+            if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] != null){
                 break;
             }
             moves.add(new ChessMove(myPosition, iterator, null));

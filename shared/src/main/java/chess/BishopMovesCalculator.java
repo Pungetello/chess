@@ -7,49 +7,49 @@ public class BishopMovesCalculator {
 
     public static Collection<ChessMove> calculate(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new LinkedList<ChessMove>();
-        ChessPosition iterator = myPosition;
+        ChessPosition possible = myPosition;
         while (true){ // up right
-            iterator = new ChessPosition(iterator.getRow()+1, iterator.getColumn()+1);
-            if(iterator.getRow() > 8 || iterator.getColumn() > 8){
+            possible = new ChessPosition(possible.getRow()+1, possible.getColumn()+1);
+            if(possible.getRow() > 8 || possible.getColumn() > 8){
                 break;
             }
-            if(board.getBoard()[iterator.getRow()][iterator.getColumn()] != null){
+            if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1] != null){
                 break;
             }
-            moves.add(new ChessMove(myPosition, iterator, null));
+            moves.add(new ChessMove(myPosition, possible, null));
         }
-        iterator = myPosition;
+        possible = myPosition;
         while (true){ // down right
-            iterator = new ChessPosition(iterator.getRow()-1, iterator.getColumn()+1);
-            if(iterator.getRow() < 1 || iterator.getColumn() > 8){
+            possible = new ChessPosition(possible.getRow()-1, possible.getColumn()+1);
+            if(possible.getRow() < 1 || possible.getColumn() > 8){
                 break;
             }
-            if(board.getBoard()[iterator.getRow()][iterator.getColumn()] != null){
+            if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1] != null){
                 break;
             }
-            moves.add(new ChessMove(myPosition, iterator, null));
+            moves.add(new ChessMove(myPosition, possible, null));
         }
-        iterator = myPosition;
+        possible = myPosition;
         while (true){ // up left
-            iterator = new ChessPosition(iterator.getRow()+1, iterator.getColumn()-1);
-            if(iterator.getColumn() < 1 || iterator.getRow() > 8){
+            possible = new ChessPosition(possible.getRow()+1, possible.getColumn()-1);
+            if(possible.getRow() > 8 || possible.getColumn() < 1){
                 break;
             }
-            if(board.getBoard()[iterator.getRow()][iterator.getColumn()] != null){
+            if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1] != null){
                 break;
             }
-            moves.add(new ChessMove(myPosition, iterator, null));
+            moves.add(new ChessMove(myPosition, possible, null));
         }
-        iterator = myPosition;
+        possible = myPosition;
         while (true){ // down left
-            iterator = new ChessPosition(iterator.getRow()-1, iterator.getColumn()-1);
-            if(iterator.getColumn() < 1 || iterator.getRow() < 1){
+            possible = new ChessPosition(possible.getRow()-1, possible.getColumn()-1);
+            if(possible.getRow() < 1 || possible.getColumn() < 1){
                 break;
             }
-            if(board.getBoard()[iterator.getRow()][iterator.getColumn()] != null){
+            if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1] != null){
                 break;
             }
-            moves.add(new ChessMove(myPosition, iterator, null));
+            moves.add(new ChessMove(myPosition, possible, null));
         }
         return moves;
     }
