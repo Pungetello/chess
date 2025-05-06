@@ -12,6 +12,7 @@ public class ChessPiece {
 
     private ChessGame.TeamColor pieceColor;
     private PieceType pieceType;
+    private ChessPosition position;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -42,6 +43,14 @@ public class ChessPiece {
      */
     public PieceType getPieceType() {
         return pieceType;
+    }
+
+    public ChessPosition getPosition() {
+        return position;
+    }
+
+    public void setPosition(ChessPosition position) {
+        this.position = position;
     }
 
     /**

@@ -31,4 +31,11 @@ public class ChessPosition {
     public int getColumn() {
         return col;
     }
+
+    /**
+     * @Override equals
+     */
+    public boolean equals(ChessPosition other){
+        return row == other.row && col == other.col;
+    }
 }
