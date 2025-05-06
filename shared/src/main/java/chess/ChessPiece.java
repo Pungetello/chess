@@ -12,7 +12,6 @@ public class ChessPiece {
 
     private ChessGame.TeamColor pieceColor;
     private PieceType pieceType;
-    private ChessPosition position;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -45,12 +44,19 @@ public class ChessPiece {
         return pieceType;
     }
 
-    public ChessPosition getPosition() {
-        return position;
+    /**
+     * @override toString
+     */
+    public String toString() {
+        return pieceType.toString();
     }
 
-    public void setPosition(ChessPosition position) {
-        this.position = position;
+    /**
+     * @override equals
+     */
+    public boolean equals(ChessPiece other) {
+        System.out.println(pieceColor + " " + pieceType + " " + other.pieceColor + " " + other.pieceType);
+        return pieceColor.toString().equals(other.getTeamColor().toString()) && pieceType.toString().equals(other.getPieceType().toString());
     }
 
     /**
