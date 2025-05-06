@@ -36,6 +36,13 @@ public class ChessBoard {
     }
 
     /**
+     * Gets the board
+     */
+    public ChessPiece[][] getBoard() {
+        return board;
+    }
+
+    /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
@@ -81,6 +88,7 @@ public class ChessBoard {
                     boardString += "| |";
                 }
             }
+            boardString += "\n";
         }
         return boardString;
     }
@@ -89,9 +97,13 @@ public class ChessBoard {
      * @override equals
      */
     public boolean equals(ChessBoard other) {
-        if (board.toString().equals(other.board.toString())) { // does not check piece colors
-            return true;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] != other.board[i][j]) {
+                    return false;
+                }
+            }
         }
-        return false;
+        return true;
     }
 }
