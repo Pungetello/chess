@@ -14,6 +14,9 @@ public class BishopMovesCalculator {
                 break;
             }
             if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1] != null){
+                if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][possible.getColumn()-1].getTeamColor()){
+                    moves.add(new ChessMove(myPosition, possible, null));
+                }
                 break;
             }
             moves.add(new ChessMove(myPosition, possible, null));
@@ -25,6 +28,9 @@ public class BishopMovesCalculator {
                 break;
             }
             if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1] != null){
+                if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][possible.getColumn()-1].getTeamColor()){
+                    moves.add(new ChessMove(myPosition, possible, null));
+                }
                 break;
             }
             moves.add(new ChessMove(myPosition, possible, null));
@@ -36,6 +42,9 @@ public class BishopMovesCalculator {
                 break;
             }
             if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1] != null){
+                if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][possible.getColumn()-1].getTeamColor()){
+                    moves.add(new ChessMove(myPosition, possible, null));
+                }
                 break;
             }
             moves.add(new ChessMove(myPosition, possible, null));
@@ -47,6 +56,9 @@ public class BishopMovesCalculator {
                 break;
             }
             if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1] != null){
+                if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][possible.getColumn()-1].getTeamColor()){
+                    moves.add(new ChessMove(myPosition, possible, null));
+                }
                 break;
             }
             moves.add(new ChessMove(myPosition, possible, null));

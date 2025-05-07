@@ -14,6 +14,9 @@ public class RookMovesCalculator {
                 break;
             }
             if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] != null){
+                if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][iterator.getColumn()-1].getTeamColor()){
+                    moves.add(new ChessMove(myPosition, iterator, null));
+                }
                 break;
             }
             moves.add(new ChessMove(myPosition, iterator, null));
@@ -25,6 +28,9 @@ public class RookMovesCalculator {
                 break;
             }
             if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] != null){
+                if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][iterator.getColumn()-1].getTeamColor()){
+                    moves.add(new ChessMove(myPosition, iterator, null));
+                }
                 break;
             }
             moves.add(new ChessMove(myPosition, iterator, null));
@@ -36,6 +42,9 @@ public class RookMovesCalculator {
                 break;
             }
             if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] != null){
+                if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][iterator.getColumn()-1].getTeamColor()){
+                    moves.add(new ChessMove(myPosition, iterator, null));
+                }
                 break;
             }
             moves.add(new ChessMove(myPosition, iterator, null));
@@ -47,6 +56,9 @@ public class RookMovesCalculator {
                 break;
             }
             if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] != null){
+                if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][iterator.getColumn()-1].getTeamColor()){
+                    moves.add(new ChessMove(myPosition, iterator, null));
+                }
                 break;
             }
             moves.add(new ChessMove(myPosition, iterator, null));

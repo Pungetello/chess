@@ -8,44 +8,17 @@ public class KnightMovesCalculator {
     public static Collection<ChessMove> calculate(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new LinkedList<ChessMove>();
 
-        ChessPosition iterator = new ChessPosition(myPosition.getRow()+2, myPosition.getColumn()+1);
-        if (iterator.getRow() <= 8 && iterator.getColumn() <= 8 && board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null) {
-            moves.add(new ChessMove(myPosition, iterator, null));
-        }
+        ChessPosition iterator;
 
-        iterator = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+2);
-        if (iterator.getRow() <= 8 && iterator.getColumn() <= 8 && board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null) {
-            moves.add(new ChessMove(myPosition, iterator, null));
-        }
+        int[][] possibleMoves = {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{-1,2},{1,-2},{-1,-2}};
 
-        iterator = new ChessPosition(myPosition.getRow()+2, myPosition.getColumn()-1);
-        if (iterator.getRow() <= 8 && iterator.getColumn() > 0 && board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null) {
-            moves.add(new ChessMove(myPosition, iterator, null));
-        }
-
-        iterator = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-2);
-        if (iterator.getRow() <= 8 && iterator.getColumn() > 0 && board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null) {
-            moves.add(new ChessMove(myPosition, iterator, null));
-        }
-
-        iterator = new ChessPosition(myPosition.getRow()-2, myPosition.getColumn()+1);
-        if (iterator.getRow() > 0 && iterator.getColumn() <= 8 && board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null) {
-            moves.add(new ChessMove(myPosition, iterator, null));
-        }
-
-        iterator = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+2);
-        if (iterator.getRow() > 0 && iterator.getColumn() <= 8 && board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null) {
-            moves.add(new ChessMove(myPosition, iterator, null));
-        }
-
-        iterator = new ChessPosition(myPosition.getRow()-2, myPosition.getColumn()-1);
-        if (iterator.getRow() > 0 && iterator.getColumn() > 0 && board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null) {
-            moves.add(new ChessMove(myPosition, iterator, null));
-        }
-
-        iterator = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-2);
-        if (iterator.getRow() > 0 && iterator.getColumn() > 0 && board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null) {
-            moves.add(new ChessMove(myPosition, iterator, null));
+        for(int[] possibleMove : possibleMoves) {
+            iterator = new ChessPosition(myPosition.getRow() + possibleMove[0], myPosition.getColumn() + possibleMove[1]);
+            if (iterator.getRow() <= 8 && iterator.getColumn() <= 8 && iterator.getRow() > 0 && iterator.getColumn() > 0) {
+                if (board.getBoard()[iterator.getRow() - 1][iterator.getColumn() - 1] == null || board.getBoard()[iterator.getRow() - 1][iterator.getColumn() - 1].getTeamColor() != board.getBoard()[myPosition.getRow() - 1][myPosition.getColumn() - 1].getTeamColor()) {
+                    moves.add(new ChessMove(myPosition, iterator, null));
+                }
+            }
         }
 
         return moves;

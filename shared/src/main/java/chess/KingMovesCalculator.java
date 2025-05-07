@@ -13,8 +13,10 @@ public class KingMovesCalculator {
 
         for(int[] possibleMove : possibleMoves) {
         iterator = new ChessPosition(myPosition.getRow()+possibleMove[0], myPosition.getColumn()+possibleMove[1]);
-        if (iterator.getRow() <= 8 && iterator.getColumn() <= 8 && iterator.getRow() > 0 && iterator.getColumn() > 0 && board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null) {
-            moves.add(new ChessMove(myPosition, iterator, null));
+        if (iterator.getRow() <= 8 && iterator.getColumn() <= 8 && iterator.getRow() > 0 && iterator.getColumn() > 0) {
+            if (board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null || board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()) {
+                moves.add(new ChessMove(myPosition, iterator, null));
+            }
         }
 }
         return moves;
