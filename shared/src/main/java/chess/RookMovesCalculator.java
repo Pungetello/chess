@@ -14,7 +14,7 @@ public class RookMovesCalculator {
                 break;
             }
             if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] != null){
-                if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][iterator.getColumn()-1].getTeamColor()){
+                if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()){
                     moves.add(new ChessMove(myPosition, iterator, null));
                 }
                 break;
@@ -28,7 +28,7 @@ public class RookMovesCalculator {
                 break;
             }
             if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] != null){
-                if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][iterator.getColumn()-1].getTeamColor()){
+                if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()){
                     moves.add(new ChessMove(myPosition, iterator, null));
                 }
                 break;
@@ -42,7 +42,7 @@ public class RookMovesCalculator {
                 break;
             }
             if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] != null){
-                if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][iterator.getColumn()-1].getTeamColor()){
+                if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()){
                     moves.add(new ChessMove(myPosition, iterator, null));
                 }
                 break;
@@ -56,7 +56,7 @@ public class RookMovesCalculator {
                 break;
             }
             if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] != null){
-                if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][iterator.getColumn()-1].getTeamColor()){
+                if(board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()){
                     moves.add(new ChessMove(myPosition, iterator, null));
                 }
                 break;
