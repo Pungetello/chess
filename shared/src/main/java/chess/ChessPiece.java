@@ -83,11 +83,16 @@ public class ChessPiece {
         if (pieceType == PieceType.BISHOP) {
             return BishopMovesCalculator.calculate(board, myPosition);
         }
-        //if (pieceType == PieceType.QUEEN) {
-            //return RookMovesCalculator.calculate(board, myPosition).addAll(BishopMovesCalculator.calculate(board, myPosition));
-        //}
+        if (pieceType == PieceType.QUEEN) {
+            Collection<ChessMove> result = RookMovesCalculator.calculate(board, myPosition);
+            result.addAll(BishopMovesCalculator.calculate(board, myPosition));
+            return result;
+        }
         if (pieceType == PieceType.KING) {
             return KingMovesCalculator.calculate(board, myPosition);
+        }
+        if (pieceType == PieceType.PAWN) {
+            return PawnMovesCalculator.calculate(board, myPosition);
         }
         return null;
     }
