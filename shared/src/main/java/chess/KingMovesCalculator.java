@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-public class KingMoveCalculator {
+public class KingMovesCalculator {
 
     private Collection<ChessMove> moves;
 
-    public KingMoveCalculator(ChessBoard board, ChessPosition myPosition){
+    public KingMovesCalculator(ChessBoard board, ChessPosition myPosition){
         this.moves = calculate(board, myPosition);
     }
 

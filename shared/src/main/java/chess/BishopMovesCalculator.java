@@ -3,11 +3,11 @@ package chess;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class BishopMoveCalculator {
+public class BishopMovesCalculator {
 
     private Collection<ChessMove> moves;
 
-    public BishopMoveCalculator(ChessBoard board, ChessPosition myPosition){
+    public BishopMovesCalculator(ChessBoard board, ChessPosition myPosition){
         this.moves = calculate(board, myPosition);
     }
 

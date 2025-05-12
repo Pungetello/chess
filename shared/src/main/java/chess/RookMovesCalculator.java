@@ -3,11 +3,11 @@ package chess;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class RookMoveCalculator {
+public class RookMovesCalculator {
 
     private Collection<ChessMove> moves;
 
-    public RookMoveCalculator(ChessBoard board, ChessPosition myPosition){
+    public RookMovesCalculator(ChessBoard board, ChessPosition myPosition){
         this.moves = calculate(board, myPosition);
     }
 

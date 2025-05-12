@@ -54,20 +54,20 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         if (type == PieceType.KING){
-           return new KingMoveCalculator(board, myPosition).getMoves();
+           return new KingMovesCalculator(board, myPosition).getMoves();
         }
         if (type == PieceType.KNIGHT){
-            return new KnightMoveCalculator(board, myPosition).getMoves();
+            return new KnightMovesCalculator(board, myPosition).getMoves();
         }
         if (type == PieceType.BISHOP){
-            return new BishopMoveCalculator(board, myPosition).getMoves();
+            return new BishopMovesCalculator(board, myPosition).getMoves();
         }
         if (type == PieceType.ROOK){
-            return new RookMoveCalculator(board, myPosition).getMoves();
+            return new RookMovesCalculator(board, myPosition).getMoves();
         }
         if (type == PieceType.QUEEN){
-            Collection<ChessMove> result = new RookMoveCalculator(board, myPosition).getMoves();
-            result.addAll(new BishopMoveCalculator(board, myPosition).getMoves());
+            Collection<ChessMove> result = new RookMovesCalculator(board, myPosition).getMoves();
+            result.addAll(new BishopMovesCalculator(board, myPosition).getMoves());
             return result;
         }
         if(type == PieceType.PAWN){
