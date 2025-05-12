@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Objects;
+
 /**
  * Represents moving a chess piece on a chessboard
  * <p>
@@ -7,15 +9,14 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessMove {
-
     private ChessPosition startPosition;
     private ChessPosition endPosition;
-    private ChessPiece.PieceType promotionPieceType;
+    private ChessPiece.PieceType promotionPiece;
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
-        this.promotionPieceType = promotionPiece;
+        this.promotionPiece = promotionPiece;
     }
 
     /**
@@ -39,33 +40,25 @@ public class ChessMove {
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
     public ChessPiece.PieceType getPromotionPiece() {
-        return promotionPieceType;
+        return promotionPiece;
     }
 
-    /**
-     * @override toString
-     */
-    public String toString() {
-        String result = startPosition.toString() + " -> " + endPosition.toString();
-        if (promotionPieceType != null) {
-            result += " (" + promotionPieceType + ")";
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
         }
-        return result;
+        ChessMove chessMove = (ChessMove) o;
+        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
     }
 
-    /**
-     * @Override hashCode
-     */
     @Override
-    public int hashCode(){
-        return this.toString().hashCode();
+    public int hashCode() {
+        return Objects.hash(startPosition, endPosition, promotionPiece);
     }
 
-    /**
-     * @override equals
-     */
     @Override
-    public boolean equals(Object other){
-        return this.toString().equals(other.toString());
+    public String toString() {
+        return startPosition + "->" + endPosition + promotionPiece;
     }
 }

@@ -3,66 +3,46 @@ package chess;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class BishopMovesCalculator {
+public class BishopMoveCalculator {
 
-    public static Collection<ChessMove> calculate(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new LinkedList<ChessMove>();
-        ChessPosition possible = myPosition;
-        while (true){ // up right
-            possible = new ChessPosition(possible.getRow()+1, possible.getColumn()+1);
-            if(possible.getRow() > 8 || possible.getColumn() > 8){
-                break;
-            }
-            if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1] != null){
-                if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()){
-                    moves.add(new ChessMove(myPosition, possible, null));
-                }
-                break;
-            }
-            moves.add(new ChessMove(myPosition, possible, null));
-        }
-        possible = myPosition;
-        while (true){ // down right
-            possible = new ChessPosition(possible.getRow()-1, possible.getColumn()+1);
-            if(possible.getRow() < 1 || possible.getColumn() > 8){
-                break;
-            }
-            if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1] != null){
-                if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()){
-                    moves.add(new ChessMove(myPosition, possible, null));
-                }
-                break;
-            }
-            moves.add(new ChessMove(myPosition, possible, null));
-        }
-        possible = myPosition;
-        while (true){ // up left
-            possible = new ChessPosition(possible.getRow()+1, possible.getColumn()-1);
-            if(possible.getRow() > 8 || possible.getColumn() < 1){
-                break;
-            }
-            if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1] != null){
-                if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()){
-                    moves.add(new ChessMove(myPosition, possible, null));
-                }
-                break;
-            }
-            moves.add(new ChessMove(myPosition, possible, null));
-        }
-        possible = myPosition;
-        while (true){ // down left
-            possible = new ChessPosition(possible.getRow()-1, possible.getColumn()-1);
-            if(possible.getRow() < 1 || possible.getColumn() < 1){
-                break;
-            }
-            if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1] != null){
-                if(board.getBoard()[possible.getRow()-1][possible.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()){
-                    moves.add(new ChessMove(myPosition, possible, null));
-                }
-                break;
-            }
-            moves.add(new ChessMove(myPosition, possible, null));
-        }
+    private Collection<ChessMove> moves;
+
+    public BishopMoveCalculator(ChessBoard board, ChessPosition myPosition){
+        this.moves = calculate(board, myPosition);
+    }
+
+    public Collection<ChessMove> getMoves(){
         return moves;
     }
+
+    public Collection<ChessMove> calculate(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> result = new LinkedList<ChessMove>();
+        ChessPosition possiblePosition;
+
+        int[][] possibleDirections = {{-1,-1},{1,-1},{-1,1},{1,1}};
+
+        for(int[] direction : possibleDirections) {
+            possiblePosition = myPosition;
+            while (true) {
+                possiblePosition = new ChessPosition(possiblePosition.getRow() + direction[0], possiblePosition.getColumn() + direction[1]);
+
+                if (possiblePosition.getRow() < 1 || possiblePosition.getRow() > 8 || possiblePosition.getColumn() < 1 || possiblePosition.getColumn() > 8) {
+                    break;
+                } else if (board.getPiece(possiblePosition) == null) {
+                    result.add(new ChessMove(myPosition, possiblePosition, null));
+                } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                    result.add(new ChessMove(myPosition, possiblePosition, null));
+                    break;
+                } else {
+                    break;
+                }
+
+            }
+        }
+
+        return result;
+    }
+
+
+
 }

@@ -2,23 +2,34 @@ package chess;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
-public class KingMovesCalculator {
+public class KingMoveCalculator {
 
-    public static Collection<ChessMove> calculate(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new LinkedList<ChessMove>();
-        ChessPosition iterator = myPosition;
+    private Collection<ChessMove> moves;
 
-        int[][] possibleMoves = {{1,1},{1,-1},{-1,1},{-1,-1},{1,0},{-1,0},{0,1},{0,-1}};
+    public KingMoveCalculator(ChessBoard board, ChessPosition myPosition){
+        this.moves = calculate(board, myPosition);
+    }
 
-        for(int[] possibleMove : possibleMoves) {
-        iterator = new ChessPosition(myPosition.getRow()+possibleMove[0], myPosition.getColumn()+possibleMove[1]);
-        if (iterator.getRow() <= 8 && iterator.getColumn() <= 8 && iterator.getRow() > 0 && iterator.getColumn() > 0) {
-            if (board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1] == null || board.getBoard()[iterator.getRow()-1][iterator.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()) {
-                moves.add(new ChessMove(myPosition, iterator, null));
-            }
-        }
-}
+    public Collection<ChessMove> getMoves(){
         return moves;
     }
+
+    public Collection<ChessMove> calculate(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> result = new LinkedList<ChessMove>();
+        int[][] possibleMoves = {{1,1},{1,-1},{-1,1},{-1,-1},{1,0},{0,1},{-1,0},{0,-1}};
+
+        for(int[] possibleMove : possibleMoves){
+            ChessPosition possiblePosition = new ChessPosition (myPosition.getRow() + possibleMove[0], myPosition.getColumn() + possibleMove[1]);
+            if(possiblePosition.getRow() > 0 && possiblePosition.getRow() < 9 && possiblePosition.getColumn() > 0 && possiblePosition.getColumn() < 9){
+                if(board.getBoard()[possiblePosition.getRow()-1][possiblePosition.getColumn()-1] == null || board.getBoard()[possiblePosition.getRow()-1][possiblePosition.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()){
+                    result.add(new ChessMove(myPosition, possiblePosition, null));
+                }
+            }
+        }
+        
+        return result;
+    }
+
 }

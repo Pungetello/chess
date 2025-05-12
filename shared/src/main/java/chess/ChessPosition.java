@@ -48,11 +48,8 @@ public class ChessPosition {
         return Objects.hash(row, col);
     }
 
-    /**
-     * @Override toString
-     */
+    @Override
     public String toString(){
-        return "(" + col + "," + row + ")";
+        return "("+row+","+col+")";
     }
-
 }
