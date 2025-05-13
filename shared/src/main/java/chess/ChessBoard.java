@@ -98,4 +98,25 @@ public class ChessBoard {
     public int hashCode() {
         return Arrays.deepHashCode(board);
     }
+
+    @Override
+    public ChessBoard clone(){
+        try{
+            ChessBoard clone = (ChessBoard) super.clone();
+            for (int i = 0; i < this.board.length; i++) {
+                for (int j = 0; j < this.board[i].length; j++) {
+                    ChessPosition position = new ChessPosition(i, j);
+                    ChessPiece piece = this.getPiece(position);
+                    if(piece != null) {
+                        clone.addPiece(position, piece);
+                    }
+                }
+            }
+            return clone;
+
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }
