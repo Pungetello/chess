@@ -52,11 +52,16 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
-        // return moves collection for piece at location
-        // make board copy for each move
-            // if board copy has same color king in check, remove that move from collection
-        // return collection
+        ChessPiece piece = board.getPiece(startPosition);
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
+        for(ChessMove move : possibleMoves) {
+            ChessGame possibleFuture = this.clone();
+            possibleFuture.makeMove(move); // still needed
+            if (possibleFuture.isInCheck(piece.getTeamColor())){
+                possibleMoves.remove(move);
+            }
+        }
+            return possibleMoves;
     }
 
     /**
@@ -80,8 +85,45 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
-        //
+        ChessPosition kingsPosition = findKingsPosition(teamColor, board);
+        for (int i = 0; i < board.getBoard().length; i++){
+            for (int j = 0; j < board.getBoard()[i].length; j++){
+                ChessPosition position = new ChessPosition(i,j);
+                ChessPiece piece = board.getPiece(position);
+                if(piece != null && piece.getTeamColor() != teamColor){
+                    Collection<ChessMove> validMoves = validMoves(position);
+                    for(ChessMove move : validMoves){
+                        if(move.getEndPosition() == kingsPosition){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Finds the position of the king of a given color
+     *
+     * @param teamColor which team to find the king of
+     * @param board the board to check for the king in
+     * @return the position of the first king of that color found, or null if none are found
+     */
+
+    public ChessPosition findKingsPosition(TeamColor teamColor, ChessBoard board){
+        ChessPosition kingsPosition;
+        for (int i = 0; i < board.getBoard().length; i++){
+            for (int j = 0; j < board.getBoard()[i].length; j++){
+                ChessPosition position = new ChessPosition(i,j);
+                ChessPiece piece = board.getPiece(position);
+                if(piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING){
+                    kingsPosition = position;
+                    return kingsPosition;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -91,10 +133,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
-        // for each enemy piece
-            // if it can move to king's location, return true
-        // return false
+        return isInCheck(teamColor) && isInStalemate(teamColor);
     }
 
     /**
@@ -106,6 +145,8 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         throw new RuntimeException("Not implemented");
+        // for piece of teamcolor on board,
+            // if validmoves size > 0, return false
     }
 
     /**
@@ -138,5 +179,19 @@ public class ChessGame {
     @Override
     public int hashCode() {
         return Objects.hash(teamTurn, board);
+    }
+
+    @Override
+    public ChessGame clone(){
+        try{
+            ChessGame clone = (ChessGame) super.clone();
+
+            ChessBoard clonedBoard = (ChessBoard) getBoard().clone();
+            clone.setBoard(clonedBoard);
+            return clone;
+
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
