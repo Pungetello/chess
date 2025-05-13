@@ -88,7 +88,7 @@ public class ChessGame {
         ChessPosition kingsPosition = findKingsPosition(teamColor, board);
         for (int i = 0; i < board.getBoard().length; i++){
             for (int j = 0; j < board.getBoard()[i].length; j++){
-                ChessPosition position = new ChessPosition(i,j);
+                ChessPosition position = new ChessPosition(i+1,j+1);
                 ChessPiece piece = board.getPiece(position);
                 if(piece != null && piece.getTeamColor() != teamColor){
                     Collection<ChessMove> validMoves = validMoves(position);
@@ -115,7 +115,7 @@ public class ChessGame {
         ChessPosition kingsPosition;
         for (int i = 0; i < board.getBoard().length; i++){
             for (int j = 0; j < board.getBoard()[i].length; j++){
-                ChessPosition position = new ChessPosition(i,j);
+                ChessPosition position = new ChessPosition(i+1,j+1);
                 ChessPiece piece = board.getPiece(position);
                 if(piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING){
                     kingsPosition = position;

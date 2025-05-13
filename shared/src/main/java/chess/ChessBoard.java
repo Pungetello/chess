@@ -105,7 +105,7 @@ public class ChessBoard {
             ChessBoard clone = (ChessBoard) super.clone();
             for (int i = 0; i < this.board.length; i++) {
                 for (int j = 0; j < this.board[i].length; j++) {
-                    ChessPosition position = new ChessPosition(i, j);
+                    ChessPosition position = new ChessPosition(i+1, j+1);
                     ChessPiece piece = this.getPiece(position);
                     if(piece != null) {
                         clone.addPiece(position, piece);
