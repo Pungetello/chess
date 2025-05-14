@@ -9,7 +9,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessGame {
+public class ChessGame implements Cloneable{
 
     private TeamColor teamTurn;
     private ChessBoard board;
@@ -107,8 +107,8 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(i+1,j+1);
                 ChessPiece piece = board.getPiece(position);
                 if(piece != null && piece.getTeamColor() != teamColor){
-                    Collection<ChessMove> validMoves = validMoves(position);
-                    for(ChessMove move : validMoves){
+                    Collection<ChessMove> possibleMoves = piece.pieceMoves(board, position); // if move would put other team in check, it still counts
+                    for(ChessMove move : possibleMoves){
                         if(move.getEndPosition() == kingsPosition){
                             return true;
                         }
@@ -212,7 +212,7 @@ public class ChessGame {
         try{
             ChessGame clone = (ChessGame) super.clone();
 
-            ChessBoard clonedBoard = (ChessBoard) getBoard().clone();
+            ChessBoard clonedBoard = getBoard().clone();
             clone.setBoard(clonedBoard);
             return clone;
 
