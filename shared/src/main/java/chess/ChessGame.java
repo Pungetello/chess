@@ -56,7 +56,7 @@ public class ChessGame {
         Collection<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
         for(ChessMove move : possibleMoves) {
             ChessGame possibleFuture = this.clone();
-            possibleFuture.makeMove(move); // still needed
+            possibleFuture.move(move);
             if (possibleFuture.isInCheck(piece.getTeamColor())){
                 possibleMoves.remove(move);
             }
@@ -71,11 +71,27 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
-        // if move == a move in collection returned by valid moves on start position,
-            // old space on board now empty
-            // new space now has piece of same type
-        // else, throw exception
+        Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
+        for(ChessMove validMove : validMoves){
+            if(move == validMove){
+                move(move);
+            }
+        }
+        throw new InvalidMoveException();
+    }
+
+    /**
+     * Makes a chess move, not checking if it's valid
+     * @param move chess move to perform
+     */
+
+    public void move(ChessMove move) {
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        if(move.getPromotionPiece() != null) {
+            piece = new ChessPiece (piece.getTeamColor(), move.getPromotionPiece());
+        }
+        board.addPiece(move.getStartPosition(), null);
+        board.addPiece(move.getEndPosition(), piece);
     }
 
     /**
