@@ -78,7 +78,7 @@ public class ChessGame implements Cloneable{
     public void makeMove(ChessMove move) throws InvalidMoveException {
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
         for(ChessMove validMove : validMoves){
-            if(move == validMove){
+            if(move.equals(validMove)){
                 move(move);
                 if(this.getTeamTurn() == TeamColor.BLACK){
                     this.setTeamTurn(TeamColor.WHITE);
