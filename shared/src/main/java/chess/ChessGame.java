@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Objects;
 
 /**
@@ -54,14 +55,18 @@ public class ChessGame implements Cloneable{
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
         Collection<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> movesToRemove = new LinkedList<>();
         for(ChessMove move : possibleMoves) {
             ChessGame possibleFuture = this.clone();
             possibleFuture.move(move);
             if (possibleFuture.isInCheck(piece.getTeamColor())){
-                possibleMoves.remove(move);
+                movesToRemove.add(move);
             }
         }
-            return possibleMoves;
+        for(ChessMove move : movesToRemove){
+            possibleMoves.remove(move);
+        }
+        return possibleMoves;
     }
 
     /**
@@ -109,7 +114,7 @@ public class ChessGame implements Cloneable{
                 if(piece != null && piece.getTeamColor() != teamColor){
                     Collection<ChessMove> possibleMoves = piece.pieceMoves(board, position); // if move would put other team in check, it still counts
                     for(ChessMove move : possibleMoves){
-                        if(move.getEndPosition() == kingsPosition){
+                        if(move.getEndPosition().equals(kingsPosition)){
                             return true;
                         }
                     }
