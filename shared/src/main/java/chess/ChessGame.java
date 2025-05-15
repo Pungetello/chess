@@ -80,6 +80,12 @@ public class ChessGame implements Cloneable{
         for(ChessMove validMove : validMoves){
             if(move == validMove){
                 move(move);
+                if(this.getTeamTurn() == TeamColor.BLACK){
+                    this.setTeamTurn(TeamColor.WHITE);
+                }else{
+                    this.setTeamTurn(TeamColor.BLACK);
+                }
+                return;
             }
         }
         throw new InvalidMoveException();
