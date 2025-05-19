@@ -1,0 +1,25 @@
+package dataaccess;
+import model.UserData;
+import java.util.HashSet;
+
+public class MemoryUserDAO implements UserDAO {
+    private HashSet<UserData> userData;
+
+    public void clear(){
+        userData.clear();
+    }
+
+    public void createUser(UserData data){
+        userData.add(data);
+    }
+
+    public UserData getUser(String username){
+        for (UserData dataObject : userData){
+            if (dataObject.getUsername().equals(username)){
+                return dataObject;
+            }
+        }
+        return null;
+    }
+
+}

@@ -4,8 +4,8 @@ import java.util.Collection;
 
 public interface GameDAO {
     void clear();
-    void createGame();
-    GameData getGame();
+    void createGame(GameData data);
+    GameData getGame(int gameID) throws DataAccessException;
     Collection<GameData> listGames();
-    boolean updateGame();
+    boolean updateGame(int gameID, GameData data) throws DataAccessException;
 }
