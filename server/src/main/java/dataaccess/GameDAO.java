@@ -1,4 +1,11 @@
 package dataaccess;
+import model.GameData;
+import java.util.Collection;
 
-public class GameDAO {
+public interface GameDAO {
+    void clear();
+    void createGame();
+    GameData getGame();
+    Collection<GameData> listGames();
+    boolean updateGame();
 }

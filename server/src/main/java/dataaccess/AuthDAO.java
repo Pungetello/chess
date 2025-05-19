@@ -1,4 +1,9 @@
 package dataaccess;
+import model.AuthData;
 
-public class AuthDAO {
+public interface AuthDAO {
+    void clear();
+    void createAuth();
+    AuthData getAuth();
+    boolean deleteAuth();
 }
