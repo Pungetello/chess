@@ -3,7 +3,7 @@ import model.AuthData;
 import java.util.HashSet;
 
 public class MemoryAuthDAO implements AuthDAO {
-    private HashSet<AuthData> authData;
+    private static HashSet<AuthData> authData;
 
     public void clear(){
         authData.clear();

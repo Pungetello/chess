@@ -3,7 +3,7 @@ import model.UserData;
 import java.util.HashSet;
 
 public class MemoryUserDAO implements UserDAO {
-    private HashSet<UserData> userData;
+    private static HashSet<UserData> userData;
 
     public void clear(){
         userData.clear();
