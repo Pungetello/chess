@@ -7,5 +7,5 @@ public interface GameDAO {
     void createGame(GameData data);
     GameData getGame(int gameID) throws DataAccessException;
     Collection<GameData> listGames();
-    boolean updateGame(int gameID, GameData data) throws DataAccessException;
+    void updateGame(int gameID, GameData data) throws DataAccessException;
 }

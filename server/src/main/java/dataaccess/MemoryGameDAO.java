@@ -23,15 +23,17 @@ public class MemoryGameDAO implements GameDAO {
         throw new DataAccessException("Game does not exist");
     }
 
-    public Collection<GameData> listGames();
+    public Collection<GameData> listGames(){
+        return gameData;
+    }
 
-    public boolean updateGame(int gameID, GameData data) throws DataAccessException {
+    public void updateGame(int gameID, GameData data) throws DataAccessException {
         try{
             GameData old = getGame(gameID);
-            //replace with new one
+            gameData.remove(old);
+            gameData.add(data);
         } catch(DataAccessException ex) {
             throw new DataAccessException("Game does not exist");
         }
-        return null;
     }
 }
