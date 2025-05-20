@@ -11,8 +11,8 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        //createRoutes(); // make into try-catch blocks for exception handling?
-        Spark.delete("/db", Handler::handleClear);
+        createRoutes(); // make into try-catch blocks for exception handling?
+
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
@@ -25,8 +25,13 @@ public class Server {
         Spark.awaitStop();
     }
 
-    //private void createRoutes(){
-        //Spark.delete("/db", Handler::handleClear);
-        // other 6
-    //}
+    private void createRoutes(){
+        Spark.delete("/db", Handler::handleClear);
+        Spark.post("/user", Handler::handleRegister);
+        //Spark.post("/session", Handler::handleLogin);
+        //Spark.delete("/session", Handler::handleLogout);
+        //Spark.get("/game", Handler::handleListGames);
+        //Spark.post("/game", Handler::handleCreateGame);
+        //Spark.put("/game", Handler::handleJoinGame);
+    }
 }
