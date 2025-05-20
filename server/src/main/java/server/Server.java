@@ -1,5 +1,6 @@
 package server;
 
+import handler.*;
 import spark.*;
 
 public class Server {
@@ -10,6 +11,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
+        createRoutes(); // make into try-catch blocks for exception handling?
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
@@ -21,5 +23,10 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    private void createRoutes(){
+        Spark.delete("/db", ClearHandler::handle);
+
     }
 }
