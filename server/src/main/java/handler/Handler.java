@@ -35,9 +35,17 @@ public class Handler {
         return new Gson().toJson(result);
     }
 
-    //public static Object handleLogout(Request req, Response res) throws DataAccessException{
-        //String authToken = new Gson().fromJson(req.headers());
-    //}
+    public static Object handleLogout(Request req, Response res) throws DataAccessException{
+        String authToken = req.headers("authorization");
+        try {
+            new Service().logout(authToken);
+            res.status(200);
+            return "";
+        } catch (DataAccessException ex){
+            res.status(401);
+            return new Gson().toJson(new results.Error("Error: unauthorized"));
+        }
+    }
 
     //public static Object handleListGames(Request req, Response res) throws DataAccessException{}
 

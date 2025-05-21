@@ -45,7 +45,9 @@ public class Service {
         return new LoginResult(newAuth.getUsername(), newAuth.getAuthToken());
     }
 
-
+    public void logout(String authToken) throws DataAccessException{
+        new MemoryAuthDAO().deleteAuth(authToken);
+    }
 
     //public ListGamesResult listGames(String authToken){}
 
