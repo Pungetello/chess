@@ -3,6 +3,10 @@ import dataaccess.*;
 import model.*;
 import requests.*;
 import results.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public class Service {
@@ -49,7 +53,16 @@ public class Service {
         new MemoryAuthDAO().deleteAuth(authToken);
     }
 
-    //public ListGamesResult listGames(String authToken){}
+    public ListGamesResult listGames(String authToken) throws DataAccessException{
+        new MemoryAuthDAO().getAuth(authToken);
+        Collection<GameData> games = new MemoryGameDAO().listGames();
+        List<Game> resultsList = new ArrayList<>();
+        for(GameData game : games){
+            Game gameResult = new Game(game.getGameID(), game.getWhiteUsername(), game.getBlackUsername(), game.getGameName());
+            resultsList.add(gameResult);
+        }
+        return new ListGamesResult(resultsList);
+    }
 
     //public void createGame(String authToken){}
 
