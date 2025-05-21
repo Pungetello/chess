@@ -23,13 +23,7 @@ public class Handler {
             res.status(200);
             return new Gson().toJson(result);
         } catch (DataAccessException ex){
-            if (ex.getMessage().equals("Already taken")){
-                res.status(403);
-                return new Gson().toJson(new results.Error("Error: already taken"));
-            } else {
-                res.status(400);
-                return new Gson().toJson(new results.Error("Error: bad request")); //still need to throw
-            }
+            return handleExceptions(ex, res);
         }
     }
 
@@ -41,13 +35,7 @@ public class Handler {
             res.status(200);
             return new Gson().toJson(result);
         } catch (DataAccessException ex){
-            if (ex.getMessage().equals("Unauthorized")){
-                res.status(401);
-                return new Gson().toJson(new results.Error("Error: unauthorized"));
-            } else {
-                res.status(400);
-                return new Gson().toJson(new results.Error("Error: bad request"));
-            }
+            return handleExceptions(ex, res);
         }
     }
 
@@ -58,8 +46,7 @@ public class Handler {
             res.status(200);
             return "";
         } catch (DataAccessException ex){
-            res.status(401);
-            return new Gson().toJson(new results.Error("Error: unauthorized"));
+            return handleExceptions(ex, res);
         }
     }
 
@@ -70,8 +57,7 @@ public class Handler {
             res.status(200);
             return new Gson().toJson(result);
         } catch (DataAccessException ex){
-            res.status(401);
-            return new Gson().toJson(new results.Error("Error: unauthorized"));
+            return handleExceptions(ex, res);
         }
 
     }
@@ -84,13 +70,7 @@ public class Handler {
             res.status(200);
             return new Gson().toJson(result);
         } catch (DataAccessException ex){
-            if (ex.getMessage().equals("Unauthorized")) {
-                res.status(401);
-                return new Gson().toJson(new results.Error("Error: unauthorized"));
-            } else {
-                res.status(400);
-                return new Gson().toJson(new results.Error("Error: bad request"));
-            }
+            return handleExceptions(ex, res);
         }
 
     }
@@ -103,15 +83,21 @@ public class Handler {
             res.status(200);
             return "";
         } catch (DataAccessException ex){
-            if (ex.getMessage().equals("Unauthorized")) {
-                res.status(401);
-                return new Gson().toJson(new results.Error("Error: unauthorized"));
-            } else if (ex.getMessage().equals("Already taken")){
-                res.status(403);
-                return new Gson().toJson(new results.Error("Error: already taken"));
-            }
+            return handleExceptions(ex, res);
+        }
+    }
+
+    private static Object handleExceptions(DataAccessException ex, Response res){
+        if (ex.getMessage().equals("Unauthorized")) {
+            res.status(401);
+            return new Gson().toJson(new results.Error("Error: unauthorized"));
+        } else if (ex.getMessage().equals("Already taken")){
+            res.status(403);
+            return new Gson().toJson(new results.Error("Error: already taken"));
+        } else {
             res.status(400);
             return new Gson().toJson(new results.Error("Error: bad request"));
         }
+
     }
 }
