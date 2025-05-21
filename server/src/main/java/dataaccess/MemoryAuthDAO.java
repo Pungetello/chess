@@ -24,12 +24,14 @@ public class MemoryAuthDAO implements AuthDAO {
 
     public void deleteAuth(String authToken) throws DataAccessException{
         boolean existed = false;
+        AuthData objToRemove = null;
         for(AuthData dataObject : authData){
             if (dataObject.getAuthToken().equals(authToken)){
                 existed = true;
-                authData.remove(dataObject);
+                objToRemove = dataObject;
             }
         }
+        authData.remove(objToRemove);
         if(!existed){
             throw new DataAccessException("Unauthorized");
         }

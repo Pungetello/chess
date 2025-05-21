@@ -28,7 +28,7 @@ public class Handler {
                 return new Gson().toJson(new results.Error("Error: already taken"));
             } else {
                 res.status(400);
-                return new Gson().toJson(new results.Error("Error: bad request"));
+                return new Gson().toJson(new results.Error("Error: bad request")); //still need to throw
             }
         }
     }
@@ -83,9 +83,14 @@ public class Handler {
             CreateGameResult result = new Service().createGame(authToken, request);
             res.status(200);
             return new Gson().toJson(result);
-        } catch (DataAccessException ex){ // also need to handle 400 Bad Request
-            res.status(401);
-            return new Gson().toJson(new results.Error("Error: unauthorized"));
+        } catch (DataAccessException ex){
+            if (ex.getMessage().equals("Unauthorized")) {
+                res.status(401);
+                return new Gson().toJson(new results.Error("Error: unauthorized"));
+            } else {
+                res.status(400);
+                return new Gson().toJson(new results.Error("Error: bad request"));
+            }
         }
 
     }

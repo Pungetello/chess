@@ -14,11 +14,12 @@ public class Service {
     }
 
     public LoginResult register(RegisterRequest request) throws DataAccessException{
-
-        // if email is invalid, throw "bad request"?
+        if (request.username() == null || request.email() == null || request.password() == null){
+            throw new DataAccessException("bad request"); //400
+        }
         MemoryUserDAO userDataAccess = new MemoryUserDAO();
         if (userDataAccess.getUser(request.username()) != null){
-            throw new DataAccessException ("Already taken");
+            throw new DataAccessException ("Already taken"); //403
         }
         UserData newUser = new UserData();
         newUser.setEmail(request.email());
@@ -38,9 +39,9 @@ public class Service {
         MemoryUserDAO userDataAccess = new MemoryUserDAO();
         UserData user = userDataAccess.getUser(request.username());
         if (user == null){
-            throw new DataAccessException("User does not exist");  //400
+            throw new DataAccessException("User does not exist");  //400 when one of three does not exist in request
         } else if(!user.getPassword().equals(request.password())){
-            throw new DataAccessException("Unauthorized");  //401
+            throw new DataAccessException("Unauthorized");  //401 when uhhh uhmm
         }
         AuthData newAuth = new AuthData();
         newAuth.setUsername(request.username());
