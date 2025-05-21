@@ -73,6 +73,24 @@ public class Service {
         return new CreateGameResult(gameID);
     }
 
-    //public void joinGame(JoinGameRequest request){}
+    public void joinGame(String authToken, JoinGameRequest request) throws DataAccessException{
+        String username = new MemoryAuthDAO().getAuth(authToken).getUsername(); //401
+        GameData game = new MemoryGameDAO().getGame(request.gameID());  //400
+        if(request.playerColor().equals("WHITE")){
+            if(game.getWhiteUsername() != null){
+                throw new DataAccessException("Already taken"); //403
+            }
+            game.setWhiteUsername(username);
+        } else if(request.playerColor().equals("BLACK")){
+            if(game.getBlackUsername() != null){
+                throw new DataAccessException("Already taken"); //403
+            }
+            game.setBlackUsername(username);
+        } else {
+            throw new DataAccessException("Bad Request"); //400
+        }
+
+        new MemoryGameDAO().updateGame(request.gameID(), game);
+    }
 
 }

@@ -74,5 +74,23 @@ public class Handler {
 
     }
 
-    //public static Object handleJoinGame(Request req, Response res) throws DataAccessException{}
+    public static Object handleJoinGame(Request req, Response res) {
+        String authToken = req.headers("authorization");
+        try {
+            JoinGameRequest request = new Gson().fromJson(req.body(), JoinGameRequest.class);
+            new Service().joinGame(authToken, request);
+            res.status(200);
+            return "";
+        } catch (DataAccessException ex){
+            if (ex.getMessage().equals("Unauthorized")) {
+                res.status(401);
+                return new Gson().toJson(new results.Error("Error: unauthorized"));
+            } else if (ex.getMessage().equals("Already taken")){
+                res.status(403);
+                return new Gson().toJson(new results.Error("Error: already taken"));
+            }
+            res.status(400);
+            return new Gson().toJson(new results.Error("Error: bad request"));
+        }
+    }
 }
