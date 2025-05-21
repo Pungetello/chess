@@ -28,7 +28,7 @@ public class Server {
     private void createRoutes(){
         Spark.delete("/db", Handler::handleClear);
         Spark.post("/user", Handler::handleRegister);
-        //Spark.post("/session", Handler::handleLogin);
+        Spark.post("/session", Handler::handleLogin);
         //Spark.delete("/session", Handler::handleLogout);
         //Spark.get("/game", Handler::handleListGames);
         //Spark.post("/game", Handler::handleCreateGame);

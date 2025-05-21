@@ -12,7 +12,7 @@ public class Service {
         new MemoryUserDAO().clear();
     }
 
-    public RegisterResult register(RegisterRequest request){
+    public LoginResult register(RegisterRequest request){
         MemoryUserDAO userDataAccess = new MemoryUserDAO();
         //if (userDataAccess.getUser(request.username()) != null){
             //return error somehow?
@@ -20,7 +20,7 @@ public class Service {
         UserData newUser = new UserData();
         newUser.setEmail(request.email());
         newUser.setPassword(request.password());
-        newUser.setUsername(request.username());          //should probably create constructor
+        newUser.setUsername(request.username());          //should probably create constructors
         userDataAccess.createUser(newUser);
 
         AuthData newAuth = new AuthData();
@@ -28,9 +28,29 @@ public class Service {
         newAuth.setAuthToken(UUID.randomUUID().toString());
         new MemoryAuthDAO().createAuth(newAuth);
 
-        return new RegisterResult(newAuth.getUsername(), newAuth.getAuthToken());
+        return new LoginResult(newAuth.getUsername(), newAuth.getAuthToken());
     }
 
-    //other 6
+    public LoginResult login(LoginRequest request){
+        MemoryUserDAO userDataAccess = new MemoryUserDAO();
+        UserData user = userDataAccess.getUser(request.username());
+        //if (user == null || !user.getPassword().equals(request.password())){
+            //return error somehow, wrong username or password
+        //}
+        AuthData newAuth = new AuthData();
+        newAuth.setUsername(request.username());
+        newAuth.setAuthToken(UUID.randomUUID().toString());
+        new MemoryAuthDAO().createAuth(newAuth);
+
+        return new LoginResult(newAuth.getUsername(), newAuth.getAuthToken());
+    }
+
+
+
+    //public ListGamesResult listGames(String authToken){}
+
+    //public void createGame(String authToken){}
+
+    //public void joinGame(JoinGameRequest request){}
 
 }
