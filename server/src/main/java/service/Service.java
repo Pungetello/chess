@@ -4,10 +4,7 @@ import model.*;
 import requests.*;
 import results.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Service {
     public void clear(){
@@ -64,7 +61,17 @@ public class Service {
         return new ListGamesResult(resultsList);
     }
 
-    //public void createGame(String authToken){}
+    public CreateGameResult createGame(String authToken, CreateGameRequest request) throws DataAccessException{
+        new MemoryAuthDAO().getAuth(authToken);
+        GameData gameData = new GameData();
+        gameData.setGameName(request.gameName());
+
+        int gameID = new Random().nextInt(Integer.MAX_VALUE);
+        gameData.setGameID(gameID); //bug: has a 1 in 2 billion chance of assigning same ID as another game
+
+        new MemoryGameDAO().createGame(gameData);
+        return new CreateGameResult(gameID);
+    }
 
     //public void joinGame(JoinGameRequest request){}
 

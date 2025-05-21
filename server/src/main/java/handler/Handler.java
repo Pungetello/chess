@@ -25,7 +25,7 @@ public class Handler {
         return new Gson().toJson(result);
     }
 
-    public static Object handleLogin(Request req, Response res) throws DataAccessException{
+    public static Object handleLogin(Request req, Response res) {
 
         LoginRequest request = new Gson().fromJson(req.body(), LoginRequest.class);
         LoginResult result = new Service().login(request);
@@ -35,7 +35,7 @@ public class Handler {
         return new Gson().toJson(result);
     }
 
-    public static Object handleLogout(Request req, Response res) throws DataAccessException{
+    public static Object handleLogout(Request req, Response res) {
         String authToken = req.headers("authorization");
         try {
             new Service().logout(authToken);
@@ -47,7 +47,7 @@ public class Handler {
         }
     }
 
-    public static Object handleListGames(Request req, Response res) throws DataAccessException{
+    public static Object handleListGames(Request req, Response res) {
         String authToken = req.headers("authorization");
         try {
             ListGamesResult result = new Service().listGames(authToken);
@@ -60,7 +60,19 @@ public class Handler {
 
     }
 
-    //public static Object handleCreateGame(Request req, Response res) throws DataAccessException{}
+    public static Object handleCreateGame(Request req, Response res) {
+        String authToken = req.headers("authorization");
+        try {
+            CreateGameRequest request = new Gson().fromJson(req.body(), CreateGameRequest.class);
+            CreateGameResult result = new Service().createGame(authToken, request);
+            res.status(200);
+            return new Gson().toJson(result);
+        } catch (DataAccessException ex){ // also need to handle 400 Bad Request
+            res.status(401);
+            return new Gson().toJson(new results.Error("Error: unauthorized"));
+        }
+
+    }
 
     //public static Object handleJoinGame(Request req, Response res) throws DataAccessException{}
 }
