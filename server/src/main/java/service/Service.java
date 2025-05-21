@@ -38,10 +38,10 @@ public class Service {
     public LoginResult login(LoginRequest request) throws DataAccessException{
         MemoryUserDAO userDataAccess = new MemoryUserDAO();
         UserData user = userDataAccess.getUser(request.username());
-        if (user == null){
-            throw new DataAccessException("User does not exist");  //400 when one of three does not exist in request
-        } else if(!user.getPassword().equals(request.password())){
-            throw new DataAccessException("Unauthorized");  //401 when uhhh uhmm
+        if (request.username() == null || request.password() == null){
+            throw new DataAccessException("User does not exist");  //400
+        } else if(user == null || !user.getPassword().equals(request.password())){
+            throw new DataAccessException("Unauthorized");  //401
         }
         AuthData newAuth = new AuthData();
         newAuth.setUsername(request.username());
@@ -67,6 +67,9 @@ public class Service {
     }
 
     public CreateGameResult createGame(String authToken, CreateGameRequest request) throws DataAccessException{
+        if(request.gameName() == null){
+            throw new DataAccessException("Bad request");
+        }
         new MemoryAuthDAO().getAuth(authToken);
         GameData gameData = new GameData();
         gameData.setGameName(request.gameName()); // need 400 error somewhere
