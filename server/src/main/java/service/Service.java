@@ -68,10 +68,17 @@ public class Service {
     public CreateGameResult createGame(String authToken, CreateGameRequest request) throws DataAccessException{
         new MemoryAuthDAO().getAuth(authToken);
         GameData gameData = new GameData();
-        gameData.setGameName(request.gameName());
+        gameData.setGameName(request.gameName()); // need 400 error somewhere
 
         int gameID = new Random().nextInt(Integer.MAX_VALUE);
-        gameData.setGameID(gameID); //bug: has a 1 in 2 billion chance of assigning same ID as another game
+        Collection<GameData> games = new MemoryGameDAO().listGames();
+        for(GameData game : games){
+            if(game.getGameID() == gameID){
+                gameID = new Random().nextInt(Integer.MAX_VALUE);
+            }
+        }
+
+        gameData.setGameID(gameID);
 
         new MemoryGameDAO().createGame(gameData);
         return new CreateGameResult(gameID);
