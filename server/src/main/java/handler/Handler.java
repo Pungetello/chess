@@ -18,21 +18,37 @@ public class Handler {
     public static Object handleRegister(Request req, Response res) throws DataAccessException{
 
         RegisterRequest request = new Gson().fromJson(req.body(), RegisterRequest.class);
-        LoginResult result = new Service().register(request);
-
-        //make sure to handle other cases: 400 Bad Request and 403 Already taken
-        res.status(200);
-        return new Gson().toJson(result);
+        try {
+            LoginResult result = new Service().register(request);
+            res.status(200);
+            return new Gson().toJson(result);
+        } catch (DataAccessException ex){
+            if (ex.getMessage().equals("Already taken")){
+                res.status(403);
+                return new Gson().toJson(new results.Error("Error: already taken"));
+            } else {
+                res.status(400);
+                return new Gson().toJson(new results.Error("Error: bad request"));
+            }
+        }
     }
 
     public static Object handleLogin(Request req, Response res) {
 
         LoginRequest request = new Gson().fromJson(req.body(), LoginRequest.class);
-        LoginResult result = new Service().login(request);
-
-        //still need error handling for 400 Bad Request and 401 Unauthorized
-        res.status(200);
-        return new Gson().toJson(result);
+        try {
+            LoginResult result = new Service().login(request);
+            res.status(200);
+            return new Gson().toJson(result);
+        } catch (DataAccessException ex){
+            if (ex.getMessage().equals("Unauthorized")){
+                res.status(401);
+                return new Gson().toJson(new results.Error("Error: unauthorized"));
+            } else {
+                res.status(400);
+                return new Gson().toJson(new results.Error("Error: bad request"));
+            }
+        }
     }
 
     public static Object handleLogout(Request req, Response res) {

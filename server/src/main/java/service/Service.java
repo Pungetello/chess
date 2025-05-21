@@ -13,11 +13,13 @@ public class Service {
         new MemoryUserDAO().clear();
     }
 
-    public LoginResult register(RegisterRequest request){
+    public LoginResult register(RegisterRequest request) throws DataAccessException{
+
+        // if email is invalid, throw "bad request"?
         MemoryUserDAO userDataAccess = new MemoryUserDAO();
-        //if (userDataAccess.getUser(request.username()) != null){
-            //return error somehow?
-        //}
+        if (userDataAccess.getUser(request.username()) != null){
+            throw new DataAccessException ("Already taken");
+        }
         UserData newUser = new UserData();
         newUser.setEmail(request.email());
         newUser.setPassword(request.password());
@@ -32,12 +34,14 @@ public class Service {
         return new LoginResult(newAuth.getUsername(), newAuth.getAuthToken());
     }
 
-    public LoginResult login(LoginRequest request){
+    public LoginResult login(LoginRequest request) throws DataAccessException{
         MemoryUserDAO userDataAccess = new MemoryUserDAO();
         UserData user = userDataAccess.getUser(request.username());
-        //if (user == null || !user.getPassword().equals(request.password())){
-            //return error somehow, wrong username or password
-        //}
+        if (user == null){
+            throw new DataAccessException("User does not exist");  //400
+        } else if(!user.getPassword().equals(request.password())){
+            throw new DataAccessException("Unauthorized");  //401
+        }
         AuthData newAuth = new AuthData();
         newAuth.setUsername(request.username());
         newAuth.setAuthToken(UUID.randomUUID().toString());
@@ -76,12 +80,14 @@ public class Service {
     public void joinGame(String authToken, JoinGameRequest request) throws DataAccessException{
         String username = new MemoryAuthDAO().getAuth(authToken).getUsername(); //401
         GameData game = new MemoryGameDAO().getGame(request.gameID());  //400
-        if(request.playerColor().equals("WHITE")){
+
+        String color = request.playerColor();
+        if(color != null && color.equals("WHITE")){
             if(game.getWhiteUsername() != null){
                 throw new DataAccessException("Already taken"); //403
             }
             game.setWhiteUsername(username);
-        } else if(request.playerColor().equals("BLACK")){
+        } else if(color != null && color.equals("BLACK")){
             if(game.getBlackUsername() != null){
                 throw new DataAccessException("Already taken"); //403
             }
