@@ -34,6 +34,14 @@ public class ChessPosition {
         return col;
     }
 
+    /**
+     * @return if the position is in range of the chess board
+     * (both col and row between 1 and 8)
+     */
+    public boolean inRange(){
+        return this.row > 0 && this.row < 9 && this.col > 0 && this.col < 9;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

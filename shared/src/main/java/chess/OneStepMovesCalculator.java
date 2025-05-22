@@ -20,8 +20,9 @@ public class OneStepMovesCalculator {
 
         for(int[] possibleMove : possibleMoves){
             ChessPosition possiblePosition = new ChessPosition (myPosition.getRow() + possibleMove[0], myPosition.getColumn() + possibleMove[1]);
-            if(possiblePosition.getRow() > 0 && possiblePosition.getRow() < 9 && possiblePosition.getColumn() > 0 && possiblePosition.getColumn() < 9){
-                if(board.getBoard()[possiblePosition.getRow()-1][possiblePosition.getColumn()-1] == null || board.getBoard()[possiblePosition.getRow()-1][possiblePosition.getColumn()-1].getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()){
+            if(possiblePosition.inRange()){
+                ChessPiece possiblePieceToTake = board.getBoard()[possiblePosition.getRow()-1][possiblePosition.getColumn()-1];
+                if(possiblePieceToTake == null || possiblePieceToTake.getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()){
                     result.add(new ChessMove(myPosition, possiblePosition, null));
                 }
             }

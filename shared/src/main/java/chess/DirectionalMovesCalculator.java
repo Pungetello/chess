@@ -25,7 +25,7 @@ public class DirectionalMovesCalculator {
             while (true) {
                 possiblePosition = new ChessPosition(possiblePosition.getRow() + direction[0], possiblePosition.getColumn() + direction[1]);
 
-                if (possiblePosition.getRow() < 1 || possiblePosition.getRow() > 8 || possiblePosition.getColumn() < 1 || possiblePosition.getColumn() > 8) {
+                if (!possiblePosition.inRange()) {
                     break;
                 } else if (board.getPiece(possiblePosition) == null) {
                     result.add(new ChessMove(myPosition, possiblePosition, null));

@@ -33,10 +33,7 @@ public class PawnMovesCalculator {
         if(board.getPiece(possiblePosition) == null) {
             //if current row end row
             if(myPosition.getRow() == endRow){
-                result.add(new ChessMove(myPosition, possiblePosition, ChessPiece.PieceType.QUEEN));
-                result.add(new ChessMove(myPosition, possiblePosition, ChessPiece.PieceType.ROOK));
-                result.add(new ChessMove(myPosition, possiblePosition, ChessPiece.PieceType.BISHOP));
-                result.add(new ChessMove(myPosition, possiblePosition, ChessPiece.PieceType.KNIGHT));
+                addPromotionMoves(result, myPosition, possiblePosition);
             } else{
                 result.add(new ChessMove(myPosition, possiblePosition, null));
             }
@@ -50,12 +47,9 @@ public class PawnMovesCalculator {
 
         for(int direction : directions) {
             possiblePosition = new ChessPosition(myPosition.getRow() + move, myPosition.getColumn() + direction);
-            if (possiblePosition.getColumn() < 9 && possiblePosition.getColumn() > 0 && board.getPiece(possiblePosition) != null && board.getPiece(possiblePosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+            if (possiblePosition.inRange() && board.getPiece(possiblePosition) != null && board.getPiece(possiblePosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                 if (myPosition.getRow() == endRow) {
-                    result.add(new ChessMove(myPosition, possiblePosition, ChessPiece.PieceType.QUEEN));
-                    result.add(new ChessMove(myPosition, possiblePosition, ChessPiece.PieceType.ROOK));
-                    result.add(new ChessMove(myPosition, possiblePosition, ChessPiece.PieceType.BISHOP));
-                    result.add(new ChessMove(myPosition, possiblePosition, ChessPiece.PieceType.KNIGHT));
+                    addPromotionMoves(result, myPosition, possiblePosition);
                 } else {
                     result.add(new ChessMove(myPosition, possiblePosition, null));
                 }
@@ -63,5 +57,12 @@ public class PawnMovesCalculator {
         }
 
         return result;
+    }
+
+    private void addPromotionMoves(Collection<ChessMove> result, ChessPosition myPosition, ChessPosition possiblePosition){
+        result.add(new ChessMove(myPosition, possiblePosition, ChessPiece.PieceType.QUEEN));
+        result.add(new ChessMove(myPosition, possiblePosition, ChessPiece.PieceType.ROOK));
+        result.add(new ChessMove(myPosition, possiblePosition, ChessPiece.PieceType.BISHOP));
+        result.add(new ChessMove(myPosition, possiblePosition, ChessPiece.PieceType.KNIGHT));
     }
 }
