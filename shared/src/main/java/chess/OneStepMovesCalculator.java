@@ -21,8 +21,9 @@ public class OneStepMovesCalculator {
         for(int[] possibleMove : possibleMoves){
             ChessPosition possiblePosition = new ChessPosition (myPosition.getRow() + possibleMove[0], myPosition.getColumn() + possibleMove[1]);
             if(possiblePosition.inRange()){
-                ChessPiece possiblePieceToTake = board.getBoard()[possiblePosition.getRow()-1][possiblePosition.getColumn()-1];
-                if(possiblePieceToTake == null || possiblePieceToTake.getTeamColor() != board.getBoard()[myPosition.getRow()-1][myPosition.getColumn()-1].getTeamColor()){
+                ChessPiece myPiece = board.getPiece(myPosition);
+                ChessPiece possiblePieceToTake = board.getPiece(possiblePosition);
+                if(possiblePieceToTake == null || possiblePieceToTake.getTeamColor() != myPiece.getTeamColor()){
                     result.add(new ChessMove(myPosition, possiblePosition, null));
                 }
             }

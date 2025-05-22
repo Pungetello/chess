@@ -47,7 +47,8 @@ public class PawnMovesCalculator {
 
         for(int direction : directions) {
             possiblePosition = new ChessPosition(myPosition.getRow() + move, myPosition.getColumn() + direction);
-            if (possiblePosition.inRange() && board.getPiece(possiblePosition) != null && board.getPiece(possiblePosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+            if (possiblePosition.inRange() && board.getPiece(possiblePosition) != null
+                    && board.getPiece(possiblePosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                 if (myPosition.getRow() == endRow) {
                     addPromotionMoves(result, myPosition, possiblePosition);
                 } else {
