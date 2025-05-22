@@ -123,12 +123,17 @@ public class ChessGame implements Cloneable{
                 ChessPiece piece = board.getPiece(position);
                 if(piece != null && piece.getTeamColor() != teamColor){
                     Collection<ChessMove> possibleMoves = piece.pieceMoves(board, position); // if move would put other team in check, it still counts
-                    for(ChessMove move : possibleMoves){
-                        if(move.getEndPosition().equals(kingsPosition)){
-                            return true;
-                        }
-                    }
+                    if (canMoveToKing(possibleMoves, kingsPosition)) return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    private boolean canMoveToKing(Collection<ChessMove> possibleMoves, ChessPosition kingsPosition){
+        for(ChessMove move : possibleMoves){
+            if(move.getEndPosition().equals(kingsPosition)){
+                return true;
             }
         }
         return false;
