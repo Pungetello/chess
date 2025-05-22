@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Objects;
 
 /**
@@ -54,21 +53,19 @@ public class ChessPiece implements Cloneable{
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         if (type == PieceType.KING){
-           return new KingMovesCalculator(board, myPosition).getMoves();
+           return new OneStepMovesCalculator(board, myPosition, new int[][] {{1,1},{1,-1},{-1,1},{-1,-1},{1,0},{0,1},{-1,0},{0,-1}}).getMoves();
         }
         if (type == PieceType.KNIGHT){
-            return new KnightMovesCalculator(board, myPosition).getMoves();
+            return new OneStepMovesCalculator(board, myPosition, new int[][] {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{1,-2},{-1,2},{-1,-2}}).getMoves();
         }
         if (type == PieceType.BISHOP){
-            return new BishopMovesCalculator(board, myPosition).getMoves();
+            return new DirectionalMovesCalculator(board, myPosition, new int[][] {{-1,-1},{1,-1},{-1,1},{1,1}}).getMoves();
         }
         if (type == PieceType.ROOK){
-            return new RookMovesCalculator(board, myPosition).getMoves();
+            return new DirectionalMovesCalculator(board, myPosition, new int[][] {{-1,0},{1,0},{0,1},{0,-1},}).getMoves();
         }
         if (type == PieceType.QUEEN){
-            Collection<ChessMove> result = new RookMovesCalculator(board, myPosition).getMoves();
-            result.addAll(new BishopMovesCalculator(board, myPosition).getMoves());
-            return result;
+            return new DirectionalMovesCalculator(board, myPosition, new int[][] {{-1,0},{1,0},{0,1},{0,-1},{-1,-1},{1,-1},{-1,1},{1,1}}).getMoves();
         }
         if(type == PieceType.PAWN){
             return new PawnMovesCalculator(board, myPosition).getMoves();

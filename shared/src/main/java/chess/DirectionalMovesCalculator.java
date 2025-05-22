@@ -3,23 +3,22 @@ package chess;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class RookMovesCalculator {
+public class DirectionalMovesCalculator {
 
     private Collection<ChessMove> moves;
 
-    public RookMovesCalculator(ChessBoard board, ChessPosition myPosition){
-        this.moves = calculate(board, myPosition);
+    public DirectionalMovesCalculator(ChessBoard board, ChessPosition myPosition, int[][] possibleDirections){
+        this.moves = calculate(board, myPosition, possibleDirections);
     }
 
     public Collection<ChessMove> getMoves(){
         return moves;
     }
 
-    public Collection<ChessMove> calculate(ChessBoard board, ChessPosition myPosition){
+    public Collection<ChessMove> calculate(ChessBoard board, ChessPosition myPosition, int[][] possibleDirections){
         Collection<ChessMove> result = new LinkedList<ChessMove>();
         ChessPosition possiblePosition;
 
-        int[][] possibleDirections = {{-1,0},{1,0},{0,1},{0,-1}};
 
         for(int[] direction : possibleDirections) {
             possiblePosition = myPosition;

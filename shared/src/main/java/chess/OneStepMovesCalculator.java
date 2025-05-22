@@ -2,23 +2,21 @@ package chess;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
-public class KnightMovesCalculator {
+public class OneStepMovesCalculator {
 
     private Collection<ChessMove> moves;
 
-    public KnightMovesCalculator(ChessBoard board, ChessPosition myPosition){
-        this.moves = calculate(board, myPosition);
+    public OneStepMovesCalculator(ChessBoard board, ChessPosition myPosition, int[][] possibleMoves){
+        this.moves = calculate(board, myPosition, possibleMoves);
     }
 
     public Collection<ChessMove> getMoves(){
         return moves;
     }
 
-    public Collection<ChessMove> calculate(ChessBoard board, ChessPosition myPosition){
+    public Collection<ChessMove> calculate(ChessBoard board, ChessPosition myPosition, int[][] possibleMoves){
         Collection<ChessMove> result = new LinkedList<ChessMove>();
-        int[][] possibleMoves = {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{1,-2},{-1,2},{-1,-2}};
 
         for(int[] possibleMove : possibleMoves){
             ChessPosition possiblePosition = new ChessPosition (myPosition.getRow() + possibleMove[0], myPosition.getColumn() + possibleMove[1]);
@@ -28,7 +26,7 @@ public class KnightMovesCalculator {
                 }
             }
         }
-
+        
         return result;
     }
 

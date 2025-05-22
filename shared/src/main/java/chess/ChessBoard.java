@@ -77,17 +77,6 @@ public class ChessBoard implements Cloneable{
         }
     }
 
-    //@Override
-    //public String toString(){
-        //for(ChessPiece[] row : board){
-            //for(ChessPiece piece : row){
-                //if (piece != null){
-                    //System
-                //}
-            //}
-        //}
-    //}
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
