@@ -10,14 +10,7 @@ public class Server {
 
     public int run(int desiredPort) {
 
-        try{
-            createDatabase();
-            new SQLAuthDAO().configureDatabase();
-            new SQLGameDAO().configureDatabase();
-            new SQLUserDAO().configureDatabase();
-        }catch (SQLException ex){
-            //idk
-        }
+        //create the database first time any SQL DAO's are created
 
         Spark.port(desiredPort);
 
