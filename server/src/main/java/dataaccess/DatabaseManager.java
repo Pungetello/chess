@@ -70,8 +70,8 @@ public class DatabaseManager {
         dbUsername = props.getProperty("db.user");
         dbPassword = props.getProperty("db.password");
 
-        var host = props.getProperty("db.host");
-        var port = Integer.parseInt(props.getProperty("db.port"));
+        var host = props.getProperty("db.host"); // localhost
+        var port = Integer.parseInt(props.getProperty("db.port")); //3306/Chess
         connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
 }

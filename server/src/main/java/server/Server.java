@@ -1,11 +1,24 @@
 package server;
 
+import dataaccess.*;
 import handler.*;
 import spark.*;
+import java.sql.SQLException;
+import static dataaccess.DatabaseManager.createDatabase;
 
 public class Server {
 
     public int run(int desiredPort) {
+
+        try{
+            createDatabase();
+            new SQLAuthDAO().configureDatabase();
+            new SQLGameDAO().configureDatabase();
+            new SQLUserDAO().configureDatabase();
+        }catch (SQLException ex){
+            //idk
+        }
+
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
