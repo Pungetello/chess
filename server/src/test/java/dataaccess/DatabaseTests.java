@@ -216,9 +216,9 @@ public class DatabaseTests {
 
         SQLGameDAO dao = new SQLGameDAO();
         dao.createGame(data);
-        GameData response = dao.getGame(999);
 
-        Assertions.assertNull(response, "should get null for game ID that does not exist");
+        Assertions.assertThrows(DataAccessException.class, () -> dao.getGame(999),
+                "should get exception for game that does not exist");
     }
 
     @Test

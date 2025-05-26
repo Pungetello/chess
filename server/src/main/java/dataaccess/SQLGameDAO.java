@@ -1,7 +1,10 @@
 package dataaccess;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
+import model.AuthData;
 import model.GameData;
+import requests.JoinGameRequest;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -66,7 +69,24 @@ public class SQLGameDAO implements GameDAO {
     }
 
     public GameData getGame(int gameID) throws DataAccessException{
-        throw new DataAccessException("SQL");
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement("SELECT gameName, whiteUsername, blackUsername, game FROM game WHERE gameID=?")){
+            preparedStatement.setInt(1, gameID);
+            try (var response = preparedStatement.executeQuery()){
+                if(response.next()){
+                    GameData data = new GameData();
+                    data.setGameID(gameID);
+                    data.setGameName(response.getString("gameName"));
+                    data.setWhiteUsername(response.getString("whiteUsername"));
+                    data.setBlackUsername(response.getString("blackUsername"));
+                    data.setGame(new Gson().fromJson(response.getString("game"), ChessGame.class));
+                    return data;
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("SQL");
+        }
+        throw new DataAccessException("Game does not exist");
     }
 
     public Collection<GameData> listGames() throws DataAccessException{
