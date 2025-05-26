@@ -40,7 +40,7 @@ public class Service {
         UserData user = userDataAccess.getUser(request.username());
         if (request.username() == null || request.password() == null){
             throw new DataAccessException("User does not exist");  //400
-        } else if(user == null || !user.getPassword().equals(request.password())){
+        } else if(user == null || !user.getPassword().equals(request.password())){//rewrite for password hashing
             throw new DataAccessException("Unauthorized");  //401
         }
         AuthData newAuth = new AuthData();

@@ -115,6 +115,54 @@ public class DatabaseTests {
     }
 
     @Test
+    @DisplayName("Create User Test")
+    public void CreateUserTest() throws Exception{
+        UserData data = new UserData();
+        data.setEmail("email");
+        data.setPassword("password");
+        data.setUsername("test");
+
+        SQLUserDAO dao = new SQLUserDAO();
+        dao.createUser(data);
+
+        int count = getDatabaseLength("user");
+        Assertions.assertEquals(1, count, "Data not in auth table after being created");
+    }
+
+    @Test
+    @DisplayName("Get User Test")
+    public void GetUserTest() throws Exception{
+        UserData data = new UserData();
+        data.setEmail("email");
+        data.setPassword("password");
+        data.setUsername("test");
+
+        SQLUserDAO dao = new SQLUserDAO();
+        dao.createUser(data);
+        UserData response = dao.getUser(data.getUsername());
+
+        Assertions.assertEquals(data, response, "Did not receive same user data");
+    }
+
+    @Test
+    @DisplayName("Negative Get User Test")
+    public void GetUserNotInDatabaseTest() throws Exception{
+        UserData data = new UserData();
+        data.setEmail("email");
+        data.setPassword("password");
+        data.setUsername("test");
+
+        SQLUserDAO dao = new SQLUserDAO();
+        dao.createUser(data);
+        UserData response = dao.getUser("invalidUsername");
+
+        Assertions.assertNull(response, "should get null for username that does not exist");
+    }
+
+
+
+
+    @Test
     @DisplayName("Game Clear Test")
     public void GameClearTest() throws Exception{
         AuthData data = new AuthData();
