@@ -29,12 +29,9 @@ public class SQLAuthDAO implements AuthDAO {
             CREATE TABLE IF NOT EXISTS auth(
              	username VARCHAR(255) NOT NULL,
              	authToken VARCHAR(255) NOT NULL,
-             	PRIMARY KEY (authToken),
-             	FOREIGN KEY (username)
-             )
-             ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-    };
+             	PRIMARY KEY (authToken)
+             )"""
+    }; // mark username as foreign key?
 
     public void clear() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
@@ -48,7 +45,7 @@ public class SQLAuthDAO implements AuthDAO {
 
     public void createAuth(AuthData data) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("INSTERT INTO auth (username, authToken) VALUES (?, ?)")) {
+            try (var preparedStatement = conn.prepareStatement("INSERT INTO auth (username, authToken) VALUES (?, ?)")) {
                 preparedStatement.setString(1,data.getUsername());
                 preparedStatement.setString(2,data.getAuthToken());
                 preparedStatement.executeUpdate();
@@ -56,5 +53,13 @@ public class SQLAuthDAO implements AuthDAO {
         } catch (SQLException ex){
             throw new DataAccessException("SQL");
         }
+    }
+
+    public AuthData getAuth(String authToken) throws DataAccessException{
+        throw new DataAccessException("SQL");
+    }
+
+    public void deleteAuth(String authToken) throws DataAccessException{
+        throw new DataAccessException("SQL");
     }
 }
