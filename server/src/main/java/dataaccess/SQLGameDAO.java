@@ -2,12 +2,10 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import model.AuthData;
 import model.GameData;
-import requests.JoinGameRequest;
-
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashSet;
 
 public class SQLGameDAO implements GameDAO {
 
@@ -90,7 +88,24 @@ public class SQLGameDAO implements GameDAO {
     }
 
     public Collection<GameData> listGames() throws DataAccessException{
-        throw new DataAccessException("SQL");
+        HashSet<GameData> result = new HashSet<GameData>();
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement("SELECT gameID, gameName, whiteUsername, blackUsername, game FROM game")){
+            try (var response = preparedStatement.executeQuery()){
+                while(response.next()){
+                    GameData data = new GameData();
+                    data.setGameID(response.getInt("gameID"));
+                    data.setGameName(response.getString("gameName"));
+                    data.setWhiteUsername(response.getString("whiteUsername"));
+                    data.setBlackUsername(response.getString("blackUsername"));
+                    data.setGame(new Gson().fromJson(response.getString("game"), ChessGame.class));
+                    result.add(data);
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("SQL");
+        }
+        return result;
     }
 
     public void updateGame(int gameID, GameData data) throws DataAccessException{

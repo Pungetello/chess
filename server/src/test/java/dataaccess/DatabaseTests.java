@@ -3,7 +3,7 @@ package dataaccess;
 import chess.ChessGame;
 import model.*;
 import org.junit.jupiter.api.*;
-
+import java.util.Collection;
 import java.util.HashSet;
 
 public class DatabaseTests {
@@ -240,8 +240,10 @@ public class DatabaseTests {
         dao.createGame(data);
         dao.createGame(data2);
 
-        HashSet<GameData> expected = new HashSet<GameData>[data, data2;];
-        HashSet<GameData> actual = dao.listGames();
+        Collection<GameData> expected = new HashSet<GameData>();
+        expected.add(data);
+        expected.add(data2);
+        Collection<GameData> actual = dao.listGames();
 
         Assertions.assertEquals(expected, actual, "Should return list of the two games created");
 
@@ -250,7 +252,10 @@ public class DatabaseTests {
     @Test
     @DisplayName("Negative List Games Test")
     public void NegListGamesTest() throws Exception{        //what's a negative test for this? unauthorized?
-        throw new DataAccessException("not implemented");
+        SQLGameDAO dao = new SQLGameDAO();
+        Collection<GameData> expected = new HashSet<GameData>();
+        Collection<GameData> actual = dao.listGames();
+        Assertions.assertEquals(actual, expected, "List should be empty");
     }
 
     @Test
