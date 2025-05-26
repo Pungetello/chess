@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.*;
 import org.junit.jupiter.api.*;
 
@@ -126,7 +127,7 @@ public class DatabaseTests {
         dao.createUser(data);
 
         int count = getDatabaseLength("user");
-        Assertions.assertEquals(1, count, "Data not in auth table after being created");
+        Assertions.assertEquals(1, count, "Data not in user table after being created");
     }
 
     @Test
@@ -159,22 +160,91 @@ public class DatabaseTests {
         Assertions.assertNull(response, "should get null for username that does not exist");
     }
 
-
-
-
     @Test
     @DisplayName("Game Clear Test")
     public void GameClearTest() throws Exception{
-        AuthData data = new AuthData();
-        data.setAuthToken("authtoken"); // NOT YET IMPLEMENTED
-        data.setUsername("test");
+        GameData data = new GameData();
+        data.setGameID(123);
+        data.setGameName("test");
+        data.setGame(new ChessGame());
 
+        SQLGameDAO dao = new SQLGameDAO();
+        dao.createGame(data);
+        dao.clear();
 
-        new SQLAuthDAO().createAuth(data);
-        new SQLAuthDAO().clear();
         int count = getDatabaseLength("game");
         Assertions.assertEquals(0, count, "Data remaining in table after clear");
     }
+
+    @Test
+    @DisplayName("Create Game Test")
+    public void CreateGameTest() throws Exception{
+        GameData data = new GameData();
+        data.setGameID(123);
+        data.setGameName("test");
+        data.setGame(new ChessGame());
+
+        SQLGameDAO dao = new SQLGameDAO();
+        dao.createGame(data);
+
+        int count = getDatabaseLength("game");
+        Assertions.assertEquals(1, count, "Data not in game table after being created");
+    }
+
+    @Test
+    @DisplayName("Get Game Test")
+    public void GetGameTest() throws Exception{
+        GameData data = new GameData();
+        data.setGameID(123);
+        data.setGameName("test");
+        data.setGame(new ChessGame());
+
+        SQLGameDAO dao = new SQLGameDAO();
+        dao.createGame(data);
+        GameData response = dao.getGame(data.getGameID());
+
+        Assertions.assertEquals(data, response, "Did not receive same user data");
+    }
+
+    @Test
+    @DisplayName("Negative Get Game Test")
+    public void GatGameNotInDatabaseTest() throws Exception{
+        GameData data = new GameData();
+        data.setGameID(123);
+        data.setGameName("test");
+        data.setGame(new ChessGame());
+
+        SQLGameDAO dao = new SQLGameDAO();
+        dao.createGame(data);
+        GameData response = dao.getGame(999);
+
+        Assertions.assertNull(response, "should get null for game ID that does not exist");
+    }
+
+    @Test
+    @DisplayName("List Games Test")
+    public void ListGamesTest() throws Exception{
+        throw new DataAccessException("not implemented");
+    }
+
+    @Test
+    @DisplayName("Negative List Games Test")
+    public void NegListGamesTest() throws Exception{        //what's a negative test for this? unauthorized?
+        throw new DataAccessException("not implemented");
+    }
+
+    @Test
+    @DisplayName("Update Game Test")
+    public void UpdateGameTest() throws Exception{
+        throw new DataAccessException("not implemented");
+    }
+
+    @Test
+    @DisplayName("Negative Update Game Test")
+    public void UpdateGameNotInDatabaseTest() throws Exception{
+        throw new DataAccessException("not implemented");
+    }
+
 
     private int getDatabaseLength(String dbName) throws Exception{
         try (var conn = DatabaseManager.getConnection();

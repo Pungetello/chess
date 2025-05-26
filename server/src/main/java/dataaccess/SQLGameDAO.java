@@ -1,5 +1,6 @@
 package dataaccess;
 
+import com.google.gson.Gson;
 import model.GameData;
 
 import java.sql.SQLException;
@@ -27,14 +28,14 @@ public class SQLGameDAO implements GameDAO {
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS game(
-              	gameID INT NOT NULL AUTO_INCREMENT,
+              	gameID INT NOT NULL,
               	gameName VARCHAR(255) NOT NULL,
               	whiteUsername VARCHAR(255),
               	blackUsername VARCHAR(255),
               	game longtext NOT NULL,
               	PRIMARY KEY (gameID)
               )"""
-    };
+    }; // make the gameID auto-increment?
 
 
 
@@ -47,15 +48,31 @@ public class SQLGameDAO implements GameDAO {
             throw new DataAccessException("SQL");
         }
     }
+
     public void createGame(GameData data) throws DataAccessException{
-        throw new DataAccessException("SQL");
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement("INSERT INTO game (gameID, gameName, game) VALUES (?, ?, ?)")) {
+            preparedStatement.setInt(1,data.getGameID());
+            preparedStatement.setString(2,data.getGameName());
+
+            String gameAsJson = new Gson().toJson(data.getGame());
+
+            preparedStatement.setString(3,gameAsJson);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException ex){
+            throw new DataAccessException("SQL");
+        }
     }
+
     public GameData getGame(int gameID) throws DataAccessException{
         throw new DataAccessException("SQL");
     }
+
     public Collection<GameData> listGames() throws DataAccessException{
         throw new DataAccessException("SQL");
     }
+
     public void updateGame(int gameID, GameData data) throws DataAccessException{
         throw new DataAccessException("SQL");
     }
