@@ -74,6 +74,30 @@ public class DatabaseTests {
                 "should get exception for auth that does not exist");
     }
 
+    @Test
+    @DisplayName("Delete Auth Test")
+    public void DeleteAuthTest() throws Exception{
+        AuthData data = new AuthData();
+        data.setAuthToken("authtoken");
+        data.setUsername("test");
+
+        SQLAuthDAO dao = new SQLAuthDAO();
+        dao.createAuth(data);
+        dao.deleteAuth("authtoken");
+
+        int count = getDatabaseLength("auth");
+        Assertions.assertEquals(0, count, "Data should not be in table after being deleted");
+    }
+
+    @Test
+    @DisplayName("Negative Delete Auth Test")
+    public void DeleteAuthNotInDatabaseTest() throws Exception{
+        SQLAuthDAO dao = new SQLAuthDAO();
+
+        Assertions.assertThrows(DataAccessException.class, () -> dao.deleteAuth("invalidAuthToken"),
+                "should get exception for auth that does not exist");
+    }
+
 
     @Test
     @DisplayName("User Clear Test")
