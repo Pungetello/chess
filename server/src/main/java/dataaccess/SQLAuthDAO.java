@@ -20,7 +20,7 @@ public class SQLAuthDAO implements AuthDAO {
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException("SQL");
         }
     }
 

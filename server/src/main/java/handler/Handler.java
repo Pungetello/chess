@@ -91,9 +91,12 @@ public class Handler {
         if (ex.getMessage().equals("Unauthorized")) {
             res.status(401);
             return new Gson().toJson(new results.Error("Error: unauthorized"));
-        } else if (ex.getMessage().equals("Already taken")){
+        } else if (ex.getMessage().equals("Already taken")) {
             res.status(403);
             return new Gson().toJson(new results.Error("Error: already taken"));
+        } else if (ex.getMessage().equals("SQL")){
+            res.status(500);
+            return "";
         } else {
             res.status(400);
             return new Gson().toJson(new results.Error("Error: bad request"));
