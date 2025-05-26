@@ -3,6 +3,8 @@ package dataaccess;
 import chess.ChessGame;
 import model.*;
 import org.junit.jupiter.api.*;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -144,7 +146,9 @@ public class DatabaseTests {
         dao.createUser(data);
         UserData response = dao.getUser(data.getUsername());
 
-        Assertions.assertEquals(data, response, "Did not receive same user data");
+        Assertions.assertEquals("email", response.getEmail(), "Did not receive same user data");
+        Assertions.assertEquals("test", response.getUsername(), "Did not receive same user data");
+        Assertions.assertTrue(BCrypt.checkpw("password", response.getPassword()), "Passwords do not match");
     }
 
     @Test

@@ -105,6 +105,5 @@ public class Handler {
             res.status(400);
             return new Gson().toJson(new results.Error("Error: bad request"));
         }
-
     }
 }

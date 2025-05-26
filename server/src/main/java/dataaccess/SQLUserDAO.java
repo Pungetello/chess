@@ -1,6 +1,8 @@
 package dataaccess;
 
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO {
@@ -47,9 +49,10 @@ public class SQLUserDAO implements UserDAO {
              var preparedStatement = conn.prepareStatement("INSERT INTO user (username, password, email) VALUES (?, ?, ?)")) {
             preparedStatement.setString(1,data.getUsername());
 
-            //hash password here!
+            String password = data.getPassword();
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt()); //encrypt password!
 
-            preparedStatement.setString(2,data.getPassword());
+            preparedStatement.setString(2,hashedPassword);
             preparedStatement.setString(3,data.getEmail());
             preparedStatement.executeUpdate();
 
@@ -64,7 +67,7 @@ public class SQLUserDAO implements UserDAO {
             preparedStatement.setString(1, username);
             try (var response = preparedStatement.executeQuery()){
                 if(response.next()){
-                    String password = response.getString("password");
+                    String password = response.getString("password"); //will return hashed-out password, not cleartext!
                     String email = response.getString("email");
                     UserData data = new UserData();
                     data.setUsername(username);

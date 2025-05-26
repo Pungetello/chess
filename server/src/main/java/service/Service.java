@@ -1,6 +1,7 @@
 package service;
 import dataaccess.*;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 import requests.*;
 import results.*;
 
@@ -38,9 +39,10 @@ public class Service {
     public LoginResult login(LoginRequest request) throws DataAccessException{
         SQLUserDAO userDataAccess = new SQLUserDAO();
         UserData user = userDataAccess.getUser(request.username());
+
         if (request.username() == null || request.password() == null){
             throw new DataAccessException("User does not exist");  //400
-        } else if(user == null || !user.getPassword().equals(request.password())){//rewrite for password hashing
+        } else if(user == null || !BCrypt.checkpw(request.password(), user.getPassword())){
             throw new DataAccessException("Unauthorized");  //401
         }
         AuthData newAuth = new AuthData();

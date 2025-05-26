@@ -44,4 +44,13 @@ public class UserData {
     public int hashCode() {
         return Objects.hash(username, password, email);
     }
+
+    @Override
+    public String toString() {
+        return "UserData{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }
