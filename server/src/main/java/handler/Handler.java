@@ -10,9 +10,13 @@ import spark.*;
 public class Handler {
 
     public static Object handleClear(Request req, Response res){
-        new Service().clear();
-        res.status(200);
-        return "";
+        try {
+            new Service().clear();
+            res.status(200);
+            return "";
+        } catch (DataAccessException ex){
+            return handleExceptions(ex, res);
+        }
     }
 
     public static Object handleRegister(Request req, Response res) throws DataAccessException{
@@ -94,9 +98,9 @@ public class Handler {
         } else if (ex.getMessage().equals("Already taken")) {
             res.status(403);
             return new Gson().toJson(new results.Error("Error: already taken"));
-        } else if (ex.getMessage().equals("SQL")){
+        } else if (ex.getMessage().equals("SQL") || ex.getMessage().equals("failed to create database")){
             res.status(500);
-            return "";
+            return new Gson().toJson(new results.Error("Error: connection to database interrupted"));
         } else {
             res.status(400);
             return new Gson().toJson(new results.Error("Error: bad request"));
