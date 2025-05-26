@@ -47,6 +47,35 @@ public class DatabaseTests {
     }
 
     @Test
+    @DisplayName("Get Auth Test")
+    public void GetAuthTest() throws Exception{
+        AuthData data = new AuthData();
+        data.setAuthToken("authtoken");
+        data.setUsername("test");
+
+        SQLAuthDAO dao = new SQLAuthDAO();
+        dao.createAuth(data);
+        AuthData response = dao.getAuth(data.getAuthToken());
+
+        Assertions.assertEquals(data, response, "Did not receive same username and auth");
+    }
+
+    @Test
+    @DisplayName("Negative Get Auth Test")
+    public void GetAuthNotInDatabaseTest() throws Exception{
+        AuthData data = new AuthData();
+        data.setAuthToken("authtoken");
+        data.setUsername("test");
+
+        SQLAuthDAO dao = new SQLAuthDAO();
+        dao.createAuth(data);
+
+        Assertions.assertThrows(DataAccessException.class, () -> dao.getAuth("invalidAuthToken"),
+                "should get exception for auth that does not exist");
+    }
+
+
+    @Test
     @DisplayName("User Clear Test")
     public void UserClearTest() throws Exception{
         UserData data = new UserData();

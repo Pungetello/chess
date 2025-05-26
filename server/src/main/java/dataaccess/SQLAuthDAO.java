@@ -44,19 +44,34 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     public void createAuth(AuthData data) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("INSERT INTO auth (username, authToken) VALUES (?, ?)")) {
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement("INSERT INTO auth (username, authToken) VALUES (?, ?)")) {
                 preparedStatement.setString(1,data.getUsername());
                 preparedStatement.setString(2,data.getAuthToken());
                 preparedStatement.executeUpdate();
-            }
+
         } catch (SQLException ex){
             throw new DataAccessException("SQL");
         }
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException{
-        throw new DataAccessException("SQL");
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement("SELECT username FROM auth WHERE authToken=?")){
+                preparedStatement.setString(1, authToken);
+                try (var response = preparedStatement.executeQuery()){
+                    if(response.next()){
+                        String username = response.getString("username");
+                        AuthData data = new AuthData();
+                        data.setAuthToken(authToken);
+                        data.setUsername(username);
+                        return data;
+                    }
+                }
+        } catch (SQLException ex) {
+            throw new DataAccessException("SQL");
+        }
+        throw new DataAccessException("Unauthorized");
     }
 
     public void deleteAuth(String authToken) throws DataAccessException{
