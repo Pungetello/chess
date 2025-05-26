@@ -4,6 +4,8 @@ import chess.ChessGame;
 import model.*;
 import org.junit.jupiter.api.*;
 
+import java.util.HashSet;
+
 public class DatabaseTests {
 
     @BeforeEach
@@ -224,7 +226,25 @@ public class DatabaseTests {
     @Test
     @DisplayName("List Games Test")
     public void ListGamesTest() throws Exception{
-        throw new DataAccessException("not implemented");
+        GameData data = new GameData();
+        data.setGameID(123);
+        data.setGameName("test");
+        data.setGame(new ChessGame());
+
+        GameData data2 = new GameData();
+        data2.setGameID(999);
+        data2.setGameName("test2");
+        data2.setGame(new ChessGame());
+
+        SQLGameDAO dao = new SQLGameDAO();
+        dao.createGame(data);
+        dao.createGame(data2);
+
+        HashSet<GameData> expected = new HashSet<GameData>[data, data2;];
+        HashSet<GameData> actual = dao.listGames();
+
+        Assertions.assertEquals(expected, actual, "Should return list of the two games created");
+
     }
 
     @Test
@@ -236,13 +256,39 @@ public class DatabaseTests {
     @Test
     @DisplayName("Update Game Test")
     public void UpdateGameTest() throws Exception{
-        throw new DataAccessException("not implemented");
+        GameData data = new GameData();
+        data.setGameID(123);
+        data.setGameName("test");
+        data.setGame(new ChessGame());
+
+        SQLGameDAO dao = new SQLGameDAO();
+        dao.createGame(data);
+
+        GameData newData = new GameData();
+        newData.setGameID(123);
+        newData.setGameName("alteredName");
+        newData.setGame(new ChessGame());
+
+        dao.updateGame(123, newData);
+
+        GameData response = dao.getGame(123);
+
+        Assertions.assertEquals(newData, response, "Did not receive same game data");
     }
 
     @Test
     @DisplayName("Negative Update Game Test")
     public void UpdateGameNotInDatabaseTest() throws Exception{
-        throw new DataAccessException("not implemented");
+        GameData data = new GameData();
+        data.setGameID(123);
+        data.setGameName("test");
+        data.setGame(new ChessGame());
+
+        SQLGameDAO dao = new SQLGameDAO();
+        dao.createGame(data);
+
+        Assertions.assertThrows(DataAccessException.class, () -> dao.updateGame(999, data),
+                "should get exception for game that does not exist");
     }
 
 

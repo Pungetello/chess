@@ -94,6 +94,22 @@ public class SQLGameDAO implements GameDAO {
     }
 
     public void updateGame(int gameID, GameData data) throws DataAccessException{
-        throw new DataAccessException("SQL");
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement("UPDATE game SET gameName = ?, whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?")){
+
+            preparedStatement.setString(1, data.getGameName());
+            preparedStatement.setString(2, data.getWhiteUsername());
+            preparedStatement.setString(3, data.getBlackUsername());
+            preparedStatement.setString(4, new Gson().toJson(data.getGame()));
+            preparedStatement.setInt(5, gameID);
+
+            int rowsEffected = preparedStatement.executeUpdate();
+
+            if(rowsEffected < 1){
+                throw new DataAccessException("Game does not exist");
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("SQL");
+        }
     }
 }
