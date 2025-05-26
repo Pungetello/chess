@@ -7,23 +7,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class SQLGameDAO implements GameDAO {
+public class SQLGameDAO extends SQL implements GameDAO {
 
     public SQLGameDAO() throws DataAccessException {
-        configureDatabase();
-    }
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException("SQL");
-        }
+        configureDatabase(createStatements);
     }
 
     private final String[] createStatements = {

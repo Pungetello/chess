@@ -3,24 +3,11 @@ package dataaccess;
 import model.AuthData;
 import java.sql.SQLException;
 
-public class SQLAuthDAO implements AuthDAO {
+public class SQLAuthDAO extends SQL implements AuthDAO {
 
 
     public SQLAuthDAO() throws DataAccessException {
-        configureDatabase();
-    }
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException("SQL");
-        }
+        configureDatabase(createStatements);
     }
 
     private final String[] createStatements = {
