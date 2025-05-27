@@ -97,7 +97,8 @@ public class SQLGameDAO extends SQL implements GameDAO {
 
     public void updateGame(int gameID, GameData data) throws DataAccessException{
         try (var conn = DatabaseManager.getConnection();
-             var preparedStatement = conn.prepareStatement("UPDATE game SET gameName = ?, whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?")){
+             var preparedStatement = conn.prepareStatement(
+                     "UPDATE game SET gameName = ?, whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?")){
 
             preparedStatement.setString(1, data.getGameName());
             preparedStatement.setString(2, data.getWhiteUsername());

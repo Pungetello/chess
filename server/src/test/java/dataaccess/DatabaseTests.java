@@ -26,7 +26,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Auth Clear Test")
-    public void AuthClearTest() throws Exception{
+    public void authClearTest() throws Exception{
         AuthData data = new AuthData();
         data.setAuthToken("authtoken");
         data.setUsername("test");
@@ -40,7 +40,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Create Auth Test")
-    public void CreateAuthTest() throws Exception{
+    public void createAuthTest() throws Exception{
         AuthData data = new AuthData();
         data.setAuthToken("authtoken");
         data.setUsername("test");
@@ -53,7 +53,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Get Auth Test")
-    public void GetAuthTest() throws Exception{
+    public void getAuthTest() throws Exception{
         AuthData data = new AuthData();
         data.setAuthToken("authtoken");
         data.setUsername("test");
@@ -67,7 +67,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Negative Get Auth Test")
-    public void GetAuthNotInDatabaseTest() throws Exception{
+    public void getAuthNotInDatabaseTest() throws Exception{
         AuthData data = new AuthData();
         data.setAuthToken("authtoken");
         data.setUsername("test");
@@ -81,7 +81,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Delete Auth Test")
-    public void DeleteAuthTest() throws Exception{
+    public void deleteAuthTest() throws Exception{
         AuthData data = new AuthData();
         data.setAuthToken("authtoken");
         data.setUsername("test");
@@ -96,7 +96,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Negative Delete Auth Test")
-    public void DeleteAuthNotInDatabaseTest() throws Exception{
+    public void deleteAuthNotInDatabaseTest() throws Exception{
         SQLAuthDAO dao = new SQLAuthDAO();
 
         Assertions.assertThrows(DataAccessException.class, () -> dao.deleteAuth("invalidAuthToken"),
@@ -106,7 +106,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("User Clear Test")
-    public void UserClearTest() throws Exception{
+    public void userClearTest() throws Exception{
         UserData data = new UserData();
         data.setEmail("email");
         data.setPassword("password");
@@ -121,7 +121,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Create User Test")
-    public void CreateUserTest() throws Exception{
+    public void createUserTest() throws Exception{
         UserData data = new UserData();
         data.setEmail("email");
         data.setPassword("password");
@@ -136,7 +136,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Get User Test")
-    public void GetUserTest() throws Exception{
+    public void getUserTest() throws Exception{
         UserData data = new UserData();
         data.setEmail("email");
         data.setPassword("password");
@@ -153,7 +153,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Negative Get User Test")
-    public void GetUserNotInDatabaseTest() throws Exception{
+    public void getUserNotInDatabaseTest() throws Exception{
         UserData data = new UserData();
         data.setEmail("email");
         data.setPassword("password");
@@ -168,7 +168,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Game Clear Test")
-    public void GameClearTest() throws Exception{
+    public void gameClearTest() throws Exception{
         GameData data = new GameData();
         data.setGameID(123);
         data.setGameName("test");
@@ -184,7 +184,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Create Game Test")
-    public void CreateGameTest() throws Exception{
+    public void createGameTest() throws Exception{
         GameData data = new GameData();
         data.setGameID(123);
         data.setGameName("test");
@@ -199,7 +199,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Get Game Test")
-    public void GetGameTest() throws Exception{
+    public void getGameTest() throws Exception{
         GameData data = new GameData();
         data.setGameID(123);
         data.setGameName("test");
@@ -214,7 +214,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Negative Get Game Test")
-    public void GatGameNotInDatabaseTest() throws Exception{
+    public void getGameNotInDatabaseTest() throws Exception{
         GameData data = new GameData();
         data.setGameID(123);
         data.setGameName("test");
@@ -229,7 +229,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("List Games Test")
-    public void ListGamesTest() throws Exception{
+    public void listGamesTest() throws Exception{
         GameData data = new GameData();
         data.setGameID(123);
         data.setGameName("test");
@@ -255,7 +255,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Negative List Games Test")
-    public void NegListGamesTest() throws Exception{        //what's a negative test for this? unauthorized?
+    public void negListGamesTest() throws Exception{        //what's a negative test for this? unauthorized?
         SQLGameDAO dao = new SQLGameDAO();
         Collection<GameData> expected = new HashSet<GameData>();
         Collection<GameData> actual = dao.listGames();
@@ -264,7 +264,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Update Game Test")
-    public void UpdateGameTest() throws Exception{
+    public void updateGameTest() throws Exception{
         GameData data = new GameData();
         data.setGameID(123);
         data.setGameName("test");
@@ -287,7 +287,7 @@ public class DatabaseTests {
 
     @Test
     @DisplayName("Negative Update Game Test")
-    public void UpdateGameNotInDatabaseTest() throws Exception{
+    public void updateGameNotInDatabaseTest() throws Exception{
         GameData data = new GameData();
         data.setGameID(123);
         data.setGameName("test");
