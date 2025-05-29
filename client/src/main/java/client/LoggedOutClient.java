@@ -1,8 +1,12 @@
 package client;
 
 public class LoggedOutClient extends Client {
+    String serverURL;
+    Repl repl;
 
-    public LoggedOutClient(String serverURL, REPL repl){}
+    public LoggedOutClient(String serverURL, Repl repl){
+
+    }
 
     public String eval(String line) throws Exception {
         var tokens = line.toLowerCase().split(" ");

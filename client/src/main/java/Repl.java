@@ -2,11 +2,11 @@ import client.*;
 
 import java.util.Scanner;
 
-public class REPL {
+public class Repl {
 
     private Client client;
 
-    public REPL(String serverUrl) {
+    public Repl(String serverUrl) {
         client = new LoggedOutClient(serverUrl, this);
     }
 
