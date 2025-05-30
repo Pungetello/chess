@@ -1,6 +1,7 @@
 package client;
 
 import dataaccess.*;
+import exception.ResponseException;
 import model.AuthData;
 import org.junit.jupiter.api.*;
 import requests.*;
@@ -83,8 +84,28 @@ public class ServerFacadeTests {
         Assertions.assertTrue(result.authToken().length() > 10);
     }
 
+    @Test
+    @DisplayName("Login negative test")
+    void loginNegTest() throws Exception {
+        RegisterRequest request = new RegisterRequest("name", "password", "email");
+        facade.register(request);
+        LoginRequest loginRequest = new LoginRequest("name", "wrong");
 
+        try{
+            facade.login(loginRequest);
+        } catch (ResponseException e) {
+            Assertions.assertEquals(401, e.StatusCode());
+        }
+        Assertions.assertThrows(Exception.class, () -> facade.login(loginRequest), "should get exception for wrong password");
+    }
 
+    @Test
+    @DisplayName("Logout test")
+    void logoutTest() throws Exception {
+        RegisterRequest request = new RegisterRequest("name", "password", "email");
+        LoginResult result = facade.register(request);
+        facade.logout(result.authToken());
+    }
 
 
 

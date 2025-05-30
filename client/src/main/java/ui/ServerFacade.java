@@ -66,7 +66,7 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             if (authToken != null && !authToken.isEmpty()) {
-                http.setRequestProperty("Authorization ", authToken);
+                http.setRequestProperty("Authorization", authToken);
             }
             http.setDoOutput(true);
 
@@ -97,7 +97,8 @@ public class ServerFacade {
         if (status != 200) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    throw ResponseException.fromJson(respErr);
+                    throw new ResponseException(status, "Error from server: " + status);
+                    //throw ResponseException.fromJson(respErr);
                 }
             }
 
