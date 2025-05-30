@@ -1,9 +1,7 @@
 package client;
 
-import dataaccess.DataAccessException;
-import dataaccess.SQLAuthDAO;
-import dataaccess.SQLGameDAO;
-import dataaccess.SQLUserDAO;
+import dataaccess.*;
+import model.AuthData;
 import org.junit.jupiter.api.*;
 import requests.*;
 import results.*;
@@ -49,10 +47,68 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void register() throws Exception {
+    @DisplayName("Register test")
+    void registerTest() throws Exception {
         RegisterRequest request = new RegisterRequest("name", "password", "email");
         LoginResult result = facade.register(request);
         Assertions.assertTrue(result.authToken().length() > 10);
+    }
+
+    @Test
+    @DisplayName("Register negative test")
+    void registerNegTest() throws Exception {
+        RegisterRequest request = new RegisterRequest("name", "password", null);
+        Assertions.assertThrows(Exception.class, () -> facade.register(request),
+                "should get exception for no email provided");
+    }
+
+    @Test
+    @DisplayName("Clear Test")
+    public void clearTest() throws Exception{
+        RegisterRequest request = new RegisterRequest("name", "password", "email");
+        facade.register(request);
+        facade.clearDatabase();
+
+        int count = getDatabaseLength("auth") + getDatabaseLength("user") + getDatabaseLength("game");
+        Assertions.assertEquals(0, count, "Data remaining in table after clear");
+    }
+
+    @Test
+    @DisplayName("Login test")
+    void loginTest() throws Exception {
+        RegisterRequest request = new RegisterRequest("name", "password", "email");
+        facade.register(request);
+        LoginRequest loginRequest = new LoginRequest("name", "password");
+        LoginResult result = facade.login(loginRequest);
+        Assertions.assertTrue(result.authToken().length() > 10);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private int getDatabaseLength(String dbName) throws Exception{
+        try (var conn = DatabaseManager.getConnection(); // MAKE PRIVATE AGAIN ONCE DONE TESTING
+             var preparedStatement = conn.prepareStatement("SELECT COUNT(*) FROM " + dbName + ";");
+             var rs = preparedStatement.executeQuery()) {
+
+            int count = -1;
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+            return count;
+        }
     }
 
 }
