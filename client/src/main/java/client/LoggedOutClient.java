@@ -45,7 +45,9 @@ public class LoggedOutClient extends Client {
         String username = args[1];
         String password = args[2];
 
+        repl.client = new LoggedInClient(serverURL, repl);
         throw new Exception("not implemented");
+
     }
 
     public String register(String[] args) throws Exception{

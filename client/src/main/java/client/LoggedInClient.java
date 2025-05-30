@@ -1,8 +1,10 @@
 package client;
 
+import repl.Repl;
+
 public class LoggedInClient extends Client {
 
-    public LoggedInClient(String serverURL, REPL repl){}
+    public LoggedInClient(String serverURL, Repl repl){}
 
     public String eval(String line) throws Exception {
         var tokens = line.toLowerCase().split(" ");
@@ -28,14 +30,22 @@ public class LoggedInClient extends Client {
     }
 
     public String help() {
-        throw new Exception("not implemented");
+        return """
+                //o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\
+                help - see a list of commands
+                quit - quit the program
+                login <username> <password> - log in
+                register <username> <password> <email> - create an account
+                \\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//
+                """;
     }
 
     public String logout() throws Exception{
         throw new Exception("not implemented");
     }
 
-    public String createGame(String name) throws Exception{
+    public String createGame(String[] tokens) throws Exception{
+        //name
         throw new Exception("not implemented");
     }
 
@@ -43,11 +53,15 @@ public class LoggedInClient extends Client {
         throw new Exception("not implemented");
     }
 
-    public String playGame(String gameNum, String color) throws Exception{
+    public String playGame(String[] tokens) throws Exception{
+        // gameNum, color
+
+        //repl.client = new GameplayClient(serverURL, repl);
         throw new Exception("not implemented"); //game num is not ID, it is the number in the list from the last time games were listed.
     }
 
-    public String observeGame(String gameNum) throws Exception{
+    public String observeGame(String[] tokens) throws Exception{
+        //gamenum
         throw new Exception("not implemented");
     }
 }

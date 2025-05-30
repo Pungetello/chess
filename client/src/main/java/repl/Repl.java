@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Repl {
 
-    private Client client;
+    public Client client;
 
     public Repl(String serverUrl) {
         client = new LoggedOutClient(serverUrl, this);
