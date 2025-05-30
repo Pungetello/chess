@@ -28,14 +28,12 @@ public class ServerFacade {
 
     public LoginResult register(RegisterRequest request) throws ResponseException {
         String path = "/user";
-        //String body = new Gson().toJson(request);
         return this.makeRequest("POST", path, request, LoginResult.class, null);
     }
 
     public LoginResult login(LoginRequest request) throws ResponseException {
         String path = "/session";
-        String body = new Gson().toJson(request);
-        return this.makeRequest("POST", path, body, LoginResult.class, null);
+        return this.makeRequest("POST", path, request, LoginResult.class, null);
     }
 
     public void logout(String authToken) throws ResponseException {
@@ -68,7 +66,7 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             if (authToken != null && !authToken.isEmpty()) {
-                http.setRequestProperty("Authorization " + authToken);
+                http.setRequestProperty("Authorization ", authToken);
             }
             http.setDoOutput(true);
 
