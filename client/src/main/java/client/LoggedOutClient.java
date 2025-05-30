@@ -1,8 +1,13 @@
 package client;
+import repl.Repl;
+import requests.*;
+import results.*;
+import ui.ServerFacade;
 
 public class LoggedOutClient extends Client {
     String serverURL;
     Repl repl;
+    String authToken;
 
     public LoggedOutClient(String serverURL, Repl repl){
 
@@ -26,7 +31,14 @@ public class LoggedOutClient extends Client {
     }
 
     public String help() {
-        throw new Exception("not implemented");
+        return """
+                //o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\
+                help - see a list of commands
+                quit - quit the program
+                login <username> <password> - log in
+                register <username> <password> <email> - create an account
+                \\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//
+                """;
     }
 
     public String login(String[] args) throws Exception{
@@ -41,7 +53,10 @@ public class LoggedOutClient extends Client {
         String password = args[2];
         String email = args[3];
 
-        throw new Exception("not implemented");
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        LoginResult result = new ServerFacade(serverURL).register(request);
+        authToken = result.authToken();
+        return "Successfully registered user " + result.username();
     }
 
 

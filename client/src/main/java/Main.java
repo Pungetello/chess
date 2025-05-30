@@ -1,6 +1,4 @@
-import chess.*;
-
-import java.util.Scanner;
+import repl.Repl;
 
 public class Main {
     public static void main(String[] args) {
@@ -8,6 +6,6 @@ public class Main {
         if (args.length == 1) {
             serverUrl = args[0];
         }
-        new REPL(serverUrl).run();
+        new Repl(serverUrl).run();
     }
 }

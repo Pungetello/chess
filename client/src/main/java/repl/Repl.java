@@ -1,3 +1,5 @@
+package repl;
+
 import client.*;
 
 import java.util.Scanner;

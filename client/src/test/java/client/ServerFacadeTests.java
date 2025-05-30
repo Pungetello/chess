@@ -5,6 +5,8 @@ import dataaccess.SQLAuthDAO;
 import dataaccess.SQLGameDAO;
 import dataaccess.SQLUserDAO;
 import org.junit.jupiter.api.*;
+import requests.*;
+import results.*;
 import server.Server;
 import ui.ServerFacade;
 
@@ -48,8 +50,9 @@ public class ServerFacadeTests {
 
     @Test
     void register() throws Exception {
-        var authData = facade.register("player1", "password", "p1@email.com");
-        Assertions.assertTrue(authData.authToken().length() > 10);
+        RegisterRequest request = new RegisterRequest("name", "password", "email");
+        LoginResult result = facade.register(request);
+        Assertions.assertTrue(result.authToken().length() > 10);
     }
 
 }
