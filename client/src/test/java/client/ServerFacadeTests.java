@@ -9,6 +9,8 @@ import results.*;
 import server.Server;
 import ui.ServerFacade;
 
+import java.util.List;
+
 
 public class ServerFacadeTests {
 
@@ -107,9 +109,41 @@ public class ServerFacadeTests {
         facade.logout(result.authToken());
     }
 
+    @Test
+    @DisplayName("List Games Test")
+    public void listGamesTest() throws Exception{
+        RegisterRequest request = new RegisterRequest("name", "password", "email");
+        LoginResult result = facade.register(request);
 
+        CreateGameRequest gameRequest = new CreateGameRequest("firstGame");
+        facade.createGame(result.authToken(), gameRequest);
 
+        ListGamesResult actual = facade.listGames(result.authToken());
+        int count = actual.games().size();
+        Assertions.assertEquals(1, count, "Should have one game in list");
+    }
 
+    @Test
+    @DisplayName("Create Game Test")
+    public void createGameTest() throws Exception{
+        RegisterRequest request = new RegisterRequest("name", "password", "email");
+        LoginResult result = facade.register(request);
+
+        CreateGameRequest gameRequest = new CreateGameRequest("firstGame");
+        facade.createGame(result.authToken(), gameRequest);
+    }
+
+    @Test
+    @DisplayName("Join Game Test")
+    public void joinGameTest() throws Exception{
+        RegisterRequest request = new RegisterRequest("name", "password", "email");
+        LoginResult result = facade.register(request);
+
+        CreateGameRequest gameRequest = new CreateGameRequest("firstGame");
+        CreateGameResult gameResult = facade.createGame(result.authToken(), gameRequest);
+
+        facade.joinGame(result.authToken(), new JoinGameRequest("WHITE", gameResult.gameID()));
+    }
 
 
 
