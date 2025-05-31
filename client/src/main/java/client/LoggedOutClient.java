@@ -3,14 +3,17 @@ import repl.Repl;
 import requests.*;
 import results.*;
 import ui.ServerFacade;
+import exception.ResponseException;
 
 public class LoggedOutClient extends Client {
     String serverURL;
     Repl repl;
-    String authToken;
+    ServerFacade facade;
 
     public LoggedOutClient(String serverURL, Repl repl){
-
+        facade = new ServerFacade(serverURL);
+        this.repl = repl;
+        this.serverURL = serverURL;
     }
 
     public String eval(String line) throws Exception {
@@ -44,10 +47,21 @@ public class LoggedOutClient extends Client {
     public String login(String[] args) throws Exception{
         String username = args[1];
         String password = args[2];
-
-        repl.client = new LoggedInClient(serverURL, repl);
-        throw new Exception("not implemented");
-
+        LoginRequest request = new LoginRequest(username, password);
+        try{
+            LoginResult result = facade.login(request);
+            repl.client = new LoggedInClient(serverURL, repl, result.authToken());
+            return "Logged in successfully as " + result.username();
+        } catch (ResponseException ex){
+            int status = ex.StatusCode();
+            if (status == 401){
+                return "Error: wrong password";
+            } else if (status == 400){
+                return "Error: please provide a username and password";
+            } else {
+                return "Error: unknown error";
+            }
+        }
     }
 
     public String register(String[] args) throws Exception{
@@ -57,8 +71,8 @@ public class LoggedOutClient extends Client {
 
         RegisterRequest request = new RegisterRequest(username, password, email);
         LoginResult result = new ServerFacade(serverURL).register(request);
-        authToken = result.authToken();
-        return "Successfully registered user " + result.username();
+        repl.client = new LoggedInClient(serverURL, repl, result.authToken());
+        return "Successfully registered and logged in as user " + result.username();
     }
 
 

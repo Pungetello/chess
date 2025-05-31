@@ -145,7 +145,7 @@ public class ServerFacadeTests {
         facade.joinGame(result.authToken(), new JoinGameRequest("WHITE", gameResult.gameID()));
     }
 
-
+// still need neg tests for join, create, list, clear, and logout.
 
 
 

@@ -4,7 +4,14 @@ import repl.Repl;
 
 public class LoggedInClient extends Client {
 
-    public LoggedInClient(String serverURL, Repl repl){}
+    String authToken;
+    String serverURL;
+    Repl repl;
+
+    public LoggedInClient(String serverURL, Repl repl, String authToken){
+        this.authToken = authToken;
+
+    }
 
     public String eval(String line) throws Exception {
         var tokens = line.toLowerCase().split(" ");
