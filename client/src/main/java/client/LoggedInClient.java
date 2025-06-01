@@ -5,14 +5,14 @@ import repl.Repl;
 import results.*;
 import requests.*;
 import ui.ServerFacade;
-import java.util.LinkedList;
+import java.util.List;
 
 public class LoggedInClient extends Client {
     ServerFacade facade;
     String authToken;
     String serverURL;
     Repl repl;
-    LinkedList<Game> listedGames;
+    List<Game> listedGames;
 
     public LoggedInClient(String serverURL, Repl repl, String authToken){
         facade = new ServerFacade(serverURL);
@@ -80,7 +80,17 @@ public class LoggedInClient extends Client {
     }
 
     public String listGames() throws Exception{
-        throw new Exception("not implemented");
+        ListGamesResult result = facade.listGames(authToken);
+        listedGames = result.games();
+        return printListedGames();
+    }
+
+    private String printListedGames(){
+        StringStream ss = new StringStream();
+        for (Game game : listedGames){
+            //return list number, name, and players
+        }
+        return "Not yet implemented";
     }
 
     public String playGame(String[] tokens) throws Exception{
@@ -114,7 +124,11 @@ public class LoggedInClient extends Client {
         if(tokens.length != 2){
             return "Usage: observe <game number>";
         }
+        int gameNum = Integer.parseInt(tokens[1]);
+        String color = "OBSERVER";
+        int gameID = listedGames.get(gameNum).gameID(); //what to do with this?
 
-        throw new Exception("not implemented"); //I don't really know what to do here
+        repl.client = new GameplayClient(serverURL, repl, authToken, color);
+        return "Now observing game " + listedGames.get(gameNum).gameName();
     }
 }

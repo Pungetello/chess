@@ -33,6 +33,7 @@ public class GameplayClient extends Client {
 
     public String help() {
         return """
+                
                 //o\\o//o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\o//o\\
                 help - see a list of commands
                 showBoard - display the current chessboard
