@@ -35,6 +35,7 @@ public class LoggedOutClient extends Client {
 
     public String help() {
         return """
+                
                 //o\\o//o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\o//o\\
                 help - see a list of commands
                 quit - quit the program
@@ -45,6 +46,9 @@ public class LoggedOutClient extends Client {
     }
 
     public String login(String[] args) throws Exception{
+        if(args.length != 3){
+            return "Usage: login <username> <password>";
+        }
         String username = args[1];
         String password = args[2];
         LoginRequest request = new LoginRequest(username, password);
@@ -65,6 +69,9 @@ public class LoggedOutClient extends Client {
     }
 
     public String register(String[] args) throws Exception{
+        if(args.length != 4){
+            return "Usage: register <username> <password> <email>";
+        }
         String username = args[1];
         String password = args[2];
         String email = args[3];

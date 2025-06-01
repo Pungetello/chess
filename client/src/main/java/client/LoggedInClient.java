@@ -46,13 +46,14 @@ public class LoggedInClient extends Client {
 
     public String help() {
         return """
+                
                 //o\\o//o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\o//o\\
                 help - see a list of commands
                 quit - quit the program
                 logout - log out
                 create <game name> - creates a new game
                 list - see a list of games in the database
-                play <player color> <game number> - join a game and begin
+                play <game number> <player color> - join a game and begin
                     playing, using number from list
                 observe <game number> - observe an ongoing game
                 \\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//
@@ -65,6 +66,9 @@ public class LoggedInClient extends Client {
     }
 
     public String createGame(String[] tokens) throws Exception{
+        if(tokens.length != 2){
+            return "Usage: create <game name>";
+        }
         String name = tokens[1];
         CreateGameRequest request = new CreateGameRequest(name);
         try{
@@ -80,6 +84,9 @@ public class LoggedInClient extends Client {
     }
 
     public String playGame(String[] tokens) throws Exception{
+        if(tokens.length != 3){
+            return "Usage: play <game number> <player color>";
+        }
         int gameNum = Integer.parseInt(tokens[1]);
         String color = tokens[2].toUpperCase();
         int gameID = listedGames.get(gameNum).gameID();
@@ -87,7 +94,7 @@ public class LoggedInClient extends Client {
         JoinGameRequest request = new JoinGameRequest(color, gameID);
         try{
             facade.joinGame(authToken,request);
-            repl.client = new GameplayClient(serverURL, repl, authToken);
+            repl.client = new GameplayClient(serverURL, repl, authToken, color);
             return "Successfully joined game " + listedGames.get(gameNum).gameName() + " as " + color;
         } catch (ResponseException ex){
             int status = ex.StatusCode();
@@ -104,6 +111,10 @@ public class LoggedInClient extends Client {
     }
 
     public String observeGame(String[] tokens) throws Exception{
-        throw new Exception("not implemented");
+        if(tokens.length != 2){
+            return "Usage: observe <game number>";
+        }
+
+        throw new Exception("not implemented"); //I don't really know what to do here
     }
 }
