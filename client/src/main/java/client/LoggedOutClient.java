@@ -35,12 +35,12 @@ public class LoggedOutClient extends Client {
 
     public String help() {
         return """
-                //o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\
+                //o\\o//o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\o//o\\
                 help - see a list of commands
                 quit - quit the program
                 login <username> <password> - log in
                 register <username> <password> <email> - create an account
-                \\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//
+                \\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//
                 """;
     }
 
@@ -51,7 +51,7 @@ public class LoggedOutClient extends Client {
         try{
             LoginResult result = facade.login(request);
             repl.client = new LoggedInClient(serverURL, repl, result.authToken());
-            return "Logged in successfully as " + result.username();
+            return "Successfully logged in as user " + result.username();
         } catch (ResponseException ex){
             int status = ex.StatusCode();
             if (status == 401){
@@ -70,9 +70,21 @@ public class LoggedOutClient extends Client {
         String email = args[3];
 
         RegisterRequest request = new RegisterRequest(username, password, email);
-        LoginResult result = new ServerFacade(serverURL).register(request);
-        repl.client = new LoggedInClient(serverURL, repl, result.authToken());
-        return "Successfully registered and logged in as user " + result.username();
+
+        try {
+            LoginResult result = new ServerFacade(serverURL).register(request);
+            repl.client = new LoggedInClient(serverURL, repl, result.authToken());
+            return "Successfully registered and logged in as user " + result.username();
+        } catch (ResponseException ex){
+            int status = ex.StatusCode();
+            if (status == 403){
+                return "Error: that username is already taken";
+            } else if (status == 400){
+                return "Error: please provide a username, password, and email";
+            } else {
+                return "Error: unknown error";
+            }
+        }
     }
 
 

@@ -70,11 +70,11 @@ public class Service {
 
     public CreateGameResult createGame(String authToken, CreateGameRequest request) throws DataAccessException{
         if(request.gameName() == null){
-            throw new DataAccessException("Bad request");
+            throw new DataAccessException("Bad request"); // 400
         }
         new SQLAuthDAO().getAuth(authToken);
         GameData gameData = new GameData();
-        gameData.setGameName(request.gameName()); // need 400 error somewhere
+        gameData.setGameName(request.gameName());
 
         int gameID = new Random().nextInt(Integer.MAX_VALUE);
         Collection<GameData> games = new SQLGameDAO().listGames();

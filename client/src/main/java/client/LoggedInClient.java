@@ -1,16 +1,24 @@
 package client;
 
+import exception.ResponseException;
 import repl.Repl;
+import results.*;
+import requests.*;
+import ui.ServerFacade;
+import java.util.LinkedList;
 
 public class LoggedInClient extends Client {
-
+    ServerFacade facade;
     String authToken;
     String serverURL;
     Repl repl;
+    LinkedList<Game> listedGames;
 
     public LoggedInClient(String serverURL, Repl repl, String authToken){
+        facade = new ServerFacade(serverURL);
         this.authToken = authToken;
-
+        this.repl = repl;
+        this.serverURL = serverURL;
     }
 
     public String eval(String line) throws Exception {
@@ -38,22 +46,33 @@ public class LoggedInClient extends Client {
 
     public String help() {
         return """
-                //o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\
+                //o\\o//o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\o//o\\
                 help - see a list of commands
                 quit - quit the program
-                login <username> <password> - log in
-                register <username> <password> <email> - create an account
-                \\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//
+                logout - log out
+                create <game name> - creates a new game
+                list - see a list of games in the database
+                play <player color> <game number> - join a game and begin
+                    playing, using number from list
+                observe <game number> - observe an ongoing game
+                \\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//
                 """;
     }
 
     public String logout() throws Exception{
-        throw new Exception("not implemented");
+        repl.client = new LoggedOutClient(serverURL, repl);
+        return "Successfully logged out";
     }
 
     public String createGame(String[] tokens) throws Exception{
-        //name
-        throw new Exception("not implemented");
+        String name = tokens[1];
+        CreateGameRequest request = new CreateGameRequest(name);
+        try{
+            facade.createGame(authToken, request);
+            return "Successfully created game: " + name;
+        } catch (ResponseException ex){
+            return "Error: please provide game name";
+        }
     }
 
     public String listGames() throws Exception{
@@ -61,14 +80,30 @@ public class LoggedInClient extends Client {
     }
 
     public String playGame(String[] tokens) throws Exception{
-        // gameNum, color
+        int gameNum = Integer.parseInt(tokens[1]);
+        String color = tokens[2].toUpperCase();
+        int gameID = listedGames.get(gameNum).gameID();
 
-        //repl.client = new GameplayClient(serverURL, repl);
-        throw new Exception("not implemented"); //game num is not ID, it is the number in the list from the last time games were listed.
+        JoinGameRequest request = new JoinGameRequest(color, gameID);
+        try{
+            facade.joinGame(authToken,request);
+            repl.client = new GameplayClient(serverURL, repl, authToken);
+            return "Successfully joined game " + listedGames.get(gameNum).gameName() + " as " + color;
+        } catch (ResponseException ex){
+            int status = ex.StatusCode();
+            if (status == 403){
+                return "Error: that color is already taken";
+            } else if (status == 400){
+                return "Error: please provide a valid game number (from the list) and color (black or white)";
+            } else if (status == 401){
+                return "Error: unauthorized. Please log in, I guess?";
+            } else {
+                return "Error: unknown error";
+            }
+        }
     }
 
     public String observeGame(String[] tokens) throws Exception{
-        //gamenum
         throw new Exception("not implemented");
     }
 }
