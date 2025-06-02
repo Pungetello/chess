@@ -69,11 +69,11 @@ public class ServerFacadeTests {
     @DisplayName("Clear Test")
     public void clearTest() throws Exception{
         RegisterRequest request = new RegisterRequest("name", "password", "email");
-        facade.register(request);
+        LoginResult result = facade.register(request);
         facade.clearDatabase();
 
-        int count = getDatabaseLength("auth") + getDatabaseLength("user") + getDatabaseLength("game");
-        Assertions.assertEquals(0, count, "Data remaining in table after clear");
+        Assertions.assertThrows(ResponseException.class, () -> facade.createGame(result.authToken(), new CreateGameRequest("name")),
+                "Data remaining in tables after clear");
     }
 
     @Test
@@ -186,24 +186,4 @@ public class ServerFacadeTests {
         Assertions.assertThrows(ResponseException.class, () -> facade.joinGame(result.authToken(), new JoinGameRequest("WHITE", gameResult.gameID())),
                 "should throw exception for joining game that's already occupied");
     }
-
-
-
-
-
-
-
-    private int getDatabaseLength(String dbName) throws Exception{
-        try (var conn = DatabaseManager.getConnection(); // MAKE PRIVATE AGAIN ONCE DONE TESTING
-             var preparedStatement = conn.prepareStatement("SELECT COUNT(*) FROM " + dbName + ";");
-             var rs = preparedStatement.executeQuery()) {
-
-            int count = -1;
-            if (rs.next()) {
-                count = rs.getInt(1);
-            }
-            return count;
-        }
-    }
-
 }
