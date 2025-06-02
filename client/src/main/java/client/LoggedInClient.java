@@ -86,11 +86,30 @@ public class LoggedInClient extends Client {
     }
 
     private String printListedGames(){
-        StringStream ss = new StringStream();
-        for (Game game : listedGames){
-            //return list number, name, and players
+        StringBuilder result = new StringBuilder();
+        int i = 0;
+        if (listedGames.isEmpty()){
+            return "No games in the database to list";
         }
-        return "Not yet implemented";
+        for (Game game : listedGames){
+            result.append(i)
+                    .append(": ")
+                    .append(game.gameName())
+                    .append(", White player: ");
+            if(game.whiteUsername() != null){
+                result.append(game.whiteUsername());
+            } else {
+                result.append("none");
+            }
+            result.append(", Black player: ");
+            if(game.blackUsername() != null){
+                result.append(game.blackUsername());
+            } else {
+                result.append("none");
+            }
+            result.append("\n");
+        }
+        return result.toString();
     }
 
     public String playGame(String[] tokens) throws Exception{

@@ -26,6 +26,8 @@ public class GameplayClient extends Client {
             return help();
         } else if (command.equals("showBoard")){
             return showBoard();
+        } else if (command.equals("quit")){
+            return "quit";
         } else {
             return help();
         }
@@ -37,6 +39,7 @@ public class GameplayClient extends Client {
                 //o\\o//o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\o//o\\
                 help - see a list of commands
                 showBoard - display the current chessboard
+                quit - quit the program
                 
                 More commands to come once gameplay is implemented!
                 \\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//
