@@ -41,17 +41,44 @@ public class GameplayClient extends Client {
 
         if (command.equals("help")){
             return help();
-        } else if (command.equals("show_board")){
+        } else if (command.equals("show_board")) {
             ChessBoard startingBoard = new ChessBoard();
             startingBoard.resetBoard();
             return showBoard(startingBoard);
-        } else if (command.equals("exitGame")){
+        } else if (command.equals("change_colors")){
+            return changeColors(tokens);
+        } else if (command.equals("exit_game")){
             return exitGame();
         } else if (command.equals("quit")){
             return "quit";
         } else {
-            return help();
+            return "Command not recognized. Type 'help' for list of commands.";
         }
+    }
+
+    public String changeColors(String[] tokens){
+        if(tokens.length != 2){
+            return "Usage: change_colors <color scheme>";
+        }
+        String colorScheme = tokens[1];
+        if(colorScheme.equals("greyscale")){
+            BG_COLOR = RESET_BG_COLOR;
+            DARK_SQUARE = SET_BG_COLOR_DARK_GREY;
+            LIGHT_SQUARE = SET_BG_COLOR_LIGHT_GREY;
+            COORDS_COLOR = RESET_TEXT_COLOR;
+            WHITE_COLOR = SET_TEXT_COLOR_WHITE;
+            BLACK_COLOR = SET_TEXT_COLOR_BLACK;
+        } else if(colorScheme.equals("vibrant")){
+            BG_COLOR = RESET_BG_COLOR;
+            DARK_SQUARE = SET_BG_COLOR_CYAN;
+            LIGHT_SQUARE = SET_BG_COLOR_MAGENTA;
+            COORDS_COLOR = SET_TEXT_COLOR_YELLOW;
+            WHITE_COLOR = SET_TEXT_COLOR_RED;
+            BLACK_COLOR = SET_TEXT_COLOR_BLUE;
+        } else {
+            return "Color scheme not recognized. Options: greyscale, vibrant";
+        }
+        return "Color scheme of board successfully changed to " + colorScheme;
     }
 
     public String exitGame() throws Exception{
@@ -66,8 +93,8 @@ public class GameplayClient extends Client {
                 help - see a list of commands
                 show_board - display the current chessboard
                 change_colors <color scheme> - change the color scheme of the board.
-                    options: greyscale, sepia, neon.
-                exitGame - exits the game
+                    options: greyscale (default), vibrant.
+                exit_game - exits the game
                 quit - quit the program
                 
                 More commands to come once gameplay is implemented!

@@ -40,7 +40,7 @@ public class LoggedInClient extends Client {
         } else if (command.equals("observe")){
             return observeGame(tokens);
         } else {
-            return help();
+            return "Command not recognized. Type 'help' for list of commands.";
         }
     }
 

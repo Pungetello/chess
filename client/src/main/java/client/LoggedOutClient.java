@@ -29,7 +29,7 @@ public class LoggedOutClient extends Client {
         } else if (command.equals("register")){
             return register(tokens);
         } else {
-            return help();
+            return "Command not recognized. Type 'help' for list of commands.";
         }
     }
 
