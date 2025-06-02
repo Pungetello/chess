@@ -117,7 +117,12 @@ public class LoggedInClient extends Client {
         if(tokens.length != 3){
             return "Usage: play <game number> <player color>";
         }
-        int gameNum = Integer.parseInt(tokens[1]);
+        int gameNum;
+        try {
+            gameNum = Integer.parseInt(tokens[1]);
+        } catch (NumberFormatException ex){
+            return "Usage: play <game number> <player color>";
+        }
         String color = tokens[2].toUpperCase();
         int gameID = listedGames.get(gameNum).gameID();
 
@@ -127,7 +132,7 @@ public class LoggedInClient extends Client {
             repl.client = new GameplayClient(serverURL, repl, authToken, color, listedGames.get(gameNum));
             return "Successfully joined game " + listedGames.get(gameNum).gameName() + " as " + color;
         } catch (ResponseException ex){
-            int status = ex.StatusCode();
+            int status = ex.statusCode();
             if (status == 403){
                 return "Error: that color is already taken";
             } else if (status == 400){

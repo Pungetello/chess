@@ -57,7 +57,7 @@ public class LoggedOutClient extends Client {
             repl.client = new LoggedInClient(serverURL, repl, result.authToken());
             return "Successfully logged in as user " + result.username();
         } catch (ResponseException ex){
-            int status = ex.StatusCode();
+            int status = ex.statusCode();
             if (status == 401){
                 return "Error: wrong password";
             } else if (status == 400){
@@ -83,7 +83,7 @@ public class LoggedOutClient extends Client {
             repl.client = new LoggedInClient(serverURL, repl, result.authToken());
             return "Successfully registered and logged in as user " + result.username();
         } catch (ResponseException ex){
-            int status = ex.StatusCode();
+            int status = ex.statusCode();
             if (status == 403){
                 return "Error: that username is already taken";
             } else if (status == 400){

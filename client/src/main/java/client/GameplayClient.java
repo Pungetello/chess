@@ -9,8 +9,6 @@ import repl.Repl;
 import results.Game;
 import ui.ServerFacade;
 import static ui.EscapeSequences.*;
-import static ui.EscapeSequences.WHITE_KING;
-import static ui.EscapeSequences.WHITE_ROOK;
 
 public class GameplayClient extends Client {
     ServerFacade facade;
@@ -19,12 +17,12 @@ public class GameplayClient extends Client {
     Repl repl;
     String playerColor;
     Game game;
-    String BG_COLOR = RESET_BG_COLOR;
-    String DARK_SQUARE = SET_BG_COLOR_DARK_GREY;
-    String LIGHT_SQUARE = SET_BG_COLOR_LIGHT_GREY;
-    String COORDS_COLOR = RESET_TEXT_COLOR;
-    String WHITE_COLOR = SET_TEXT_COLOR_WHITE;
-    String BLACK_COLOR = SET_TEXT_COLOR_BLACK;
+    String bgColor = RESET_BG_COLOR;
+    String darkSquare = SET_BG_COLOR_DARK_GREY;
+    String lightSquare = SET_BG_COLOR_LIGHT_GREY;
+    String coordsColor = RESET_TEXT_COLOR;
+    String whiteColor = SET_TEXT_COLOR_WHITE;
+    String blackColor = SET_TEXT_COLOR_BLACK;
 
     public GameplayClient(String serverURL, Repl repl, String authToken, String playerColor, Game game){
         facade = new ServerFacade(serverURL);
@@ -62,19 +60,19 @@ public class GameplayClient extends Client {
         }
         String colorScheme = tokens[1];
         if(colorScheme.equals("greyscale")){
-            BG_COLOR = RESET_BG_COLOR;
-            DARK_SQUARE = SET_BG_COLOR_DARK_GREY;
-            LIGHT_SQUARE = SET_BG_COLOR_LIGHT_GREY;
-            COORDS_COLOR = RESET_TEXT_COLOR;
-            WHITE_COLOR = SET_TEXT_COLOR_WHITE;
-            BLACK_COLOR = SET_TEXT_COLOR_BLACK;
+            bgColor = RESET_BG_COLOR;
+            darkSquare = SET_BG_COLOR_DARK_GREY;
+            lightSquare = SET_BG_COLOR_LIGHT_GREY;
+            coordsColor = RESET_TEXT_COLOR;
+            whiteColor = SET_TEXT_COLOR_WHITE;
+            blackColor = SET_TEXT_COLOR_BLACK;
         } else if(colorScheme.equals("vibrant")){
-            BG_COLOR = RESET_BG_COLOR;
-            DARK_SQUARE = SET_BG_COLOR_CYAN;
-            LIGHT_SQUARE = SET_BG_COLOR_MAGENTA;
-            COORDS_COLOR = SET_TEXT_COLOR_YELLOW;
-            WHITE_COLOR = SET_TEXT_COLOR_RED;
-            BLACK_COLOR = SET_TEXT_COLOR_BLUE;
+            bgColor = RESET_BG_COLOR;
+            darkSquare = SET_BG_COLOR_CYAN;
+            lightSquare = SET_BG_COLOR_MAGENTA;
+            coordsColor = SET_TEXT_COLOR_YELLOW;
+            whiteColor = SET_TEXT_COLOR_RED;
+            blackColor = SET_TEXT_COLOR_BLUE;
         } else {
             return "Color scheme not recognized. Options: greyscale, vibrant";
         }
@@ -82,7 +80,7 @@ public class GameplayClient extends Client {
     }
 
     public String exitGame() throws Exception{
-        repl.client = new LoggedOutClient(serverURL, repl);
+        repl.client = new LoggedInClient(serverURL, repl, authToken);
         return "Successfully exited game " + game.gameName();
     }
 
@@ -113,11 +111,11 @@ public class GameplayClient extends Client {
 
     private String printBlackBoard(ChessBoard board){
         StringBuilder result = new StringBuilder();
-        result.append(BG_COLOR)
-                .append(COORDS_COLOR)
+        result.append(bgColor)
+                .append(coordsColor)
                 .append(blackXAxis());
         for(int i=1; i <= 8; i++){
-            result.append(rowAsString(i, board));
+            result.append(rowAsString(i, board, ChessGame.TeamColor.BLACK));
         }
         result.append(blackXAxis())
                 .append(RESET_BG_COLOR)
@@ -127,11 +125,11 @@ public class GameplayClient extends Client {
 
     private String printWhiteBoard(ChessBoard board){
         StringBuilder result = new StringBuilder();
-        result.append(BG_COLOR)
-                .append(COORDS_COLOR)
+        result.append(bgColor)
+                .append(coordsColor)
                 .append(whiteXAxis());
         for(int i=8; i > 0; i--){
-            result.append(rowAsString(i, board));
+            result.append(rowAsString(i, board, ChessGame.TeamColor.WHITE));
         }
         result.append(whiteXAxis())
                 .append(RESET_BG_COLOR)
@@ -147,59 +145,73 @@ public class GameplayClient extends Client {
         return "    h\u2003 g\u2003 f\u2003 e\u2003 d\u2003 c\u2003 b\u2003 a\u2003   \n";
     }
 
-    private String rowAsString(int row, ChessBoard board){
+    private String rowAsString(int row, ChessBoard board, ChessGame.TeamColor playerColor){
         StringBuilder result = new StringBuilder();
-        String label = BG_COLOR + COORDS_COLOR + " " + row + " ";
+        String label = bgColor + coordsColor + " " + row + " ";
         result.append(label);
-        for(int i = 1; i <= 8; i++){
-            if ((row + i)%2 == 1){
-                result.append(DARK_SQUARE);
-            } else {
-                result.append(LIGHT_SQUARE);
+        if(playerColor.equals(ChessGame.TeamColor.WHITE)) {
+            for (int i = 1; i <= 8; i++) {
+                result.append(squareAsString(row, i, board));
             }
-            ChessPiece piece = board.getPiece(new ChessPosition(row, i));
-            if (piece == null){
-                result.append(EMPTY);
-            } else {
-                PieceType type = piece.getPieceType();
-                ChessGame.TeamColor color = piece.getTeamColor();
+        } else {
+            for (int i = 8; i >= 1; i--) {
+                result.append(squareAsString(row, i, board));
+            }
 
-                result.append(pieceAsString(type, color));
-            }
         }
+
         result.append(label);
         result.append("\n");
+        return result.toString();
+    }
+
+    private String squareAsString(int row, int col, ChessBoard board){
+        StringBuilder result = new StringBuilder();
+        if ((row + col) % 2 == 0) {
+            result.append(darkSquare);
+        } else {
+            result.append(lightSquare);
+        }
+        ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+        if (piece == null) {
+            result.append(EMPTY);
+        } else {
+            PieceType type = piece.getPieceType();
+            ChessGame.TeamColor color = piece.getTeamColor();
+
+            result.append(pieceAsString(type, color));
+        }
         return result.toString();
     }
 
     private String pieceAsString(PieceType type, ChessGame.TeamColor color){
         if(color.equals(ChessGame.TeamColor.BLACK)){
             if(type.equals(PieceType.PAWN)){
-                return BLACK_COLOR + BLACK_PAWN;
+                return blackColor + BLACK_PAWN;
             } else if(type.equals(PieceType.ROOK)){
-                return BLACK_COLOR + BLACK_ROOK;
+                return blackColor + BLACK_ROOK;
             } else if(type.equals(PieceType.BISHOP)){
-                return BLACK_COLOR + BLACK_BISHOP;
+                return blackColor + BLACK_BISHOP;
             } else if(type.equals(PieceType.KNIGHT)){
-                return BLACK_COLOR + BLACK_KNIGHT;
+                return blackColor + BLACK_KNIGHT;
             } else if(type.equals(PieceType.QUEEN)){
-                return BLACK_COLOR + BLACK_QUEEN;
+                return blackColor + BLACK_QUEEN;
             } else if(type.equals(PieceType.KING)){
-                return BLACK_COLOR + BLACK_KING;
+                return blackColor + BLACK_KING;
             }
         } else if(color.equals(ChessGame.TeamColor.WHITE)){
             if(type.equals(PieceType.PAWN)){
-                return WHITE_COLOR + WHITE_PAWN;
+                return whiteColor + WHITE_PAWN;
             } else if(type.equals(PieceType.ROOK)){
-                return WHITE_COLOR + WHITE_ROOK;
+                return whiteColor + WHITE_ROOK;
             } else if(type.equals(PieceType.BISHOP)){
-                return WHITE_COLOR + WHITE_BISHOP;
+                return whiteColor + WHITE_BISHOP;
             } else if(type.equals(PieceType.KNIGHT)){
-                return WHITE_COLOR + WHITE_KNIGHT;
+                return whiteColor + WHITE_KNIGHT;
             } else if(type.equals(PieceType.QUEEN)){
-                return WHITE_COLOR + WHITE_QUEEN;
+                return whiteColor + WHITE_QUEEN;
             } else if(type.equals(PieceType.KING)){
-                return WHITE_COLOR + WHITE_KING;
+                return whiteColor + WHITE_KING;
             }
         }
         return EMPTY;
