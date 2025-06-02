@@ -1,6 +1,7 @@
 package client;
 
 import repl.Repl;
+import results.Game;
 import ui.ServerFacade;
 
 public class GameplayClient extends Client {
@@ -9,13 +10,15 @@ public class GameplayClient extends Client {
     String serverURL;
     Repl repl;
     String playerColor;
+    Game game;
 
-    public GameplayClient(String serverURL, Repl repl, String authToken, String playerColor){
+    public GameplayClient(String serverURL, Repl repl, String authToken, String playerColor, Game game){
         facade = new ServerFacade(serverURL);
         this.authToken = authToken;
         this.repl = repl;
         this.serverURL = serverURL;
         this.playerColor = playerColor;
+        this.game = game;
     }
 
     public String eval(String line) throws Exception {
@@ -26,11 +29,18 @@ public class GameplayClient extends Client {
             return help();
         } else if (command.equals("showBoard")){
             return showBoard();
+        } else if (command.equals("exitGame")){
+            return exitGame();
         } else if (command.equals("quit")){
             return "quit";
         } else {
             return help();
         }
+    }
+
+    public String exitGame() throws Exception{
+        repl.client = new LoggedOutClient(serverURL, repl);
+        return "Successfully exited game " + game.gameName();
     }
 
     public String help() {
@@ -39,6 +49,7 @@ public class GameplayClient extends Client {
                 //o\\o//o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\o//o\\
                 help - see a list of commands
                 showBoard - display the current chessboard
+                exitGame - exits the game
                 quit - quit the program
                 
                 More commands to come once gameplay is implemented!
