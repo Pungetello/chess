@@ -108,6 +108,7 @@ public class LoggedInClient extends Client {
                 result.append("none");
             }
             result.append("\n");
+            i++;
         }
         return result.toString();
     }

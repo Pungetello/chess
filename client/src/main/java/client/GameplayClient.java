@@ -19,10 +19,12 @@ public class GameplayClient extends Client {
     Repl repl;
     String playerColor;
     Game game;
-    String BG_COLOR = SET_BG_COLOR_DARK_GREY;
-    String DARK_SQUARE = SET_BG_COLOR_BLACK;
+    String BG_COLOR = RESET_BG_COLOR;
+    String DARK_SQUARE = SET_BG_COLOR_DARK_GREY;
     String LIGHT_SQUARE = SET_BG_COLOR_LIGHT_GREY;
-    String COORDS_COLOR = SET_TEXT_COLOR_BLACK;
+    String COORDS_COLOR = RESET_TEXT_COLOR;
+    String WHITE_COLOR = SET_TEXT_COLOR_WHITE;
+    String BLACK_COLOR = SET_TEXT_COLOR_BLACK;
 
     public GameplayClient(String serverURL, Repl repl, String authToken, String playerColor, Game game){
         facade = new ServerFacade(serverURL);
@@ -39,8 +41,10 @@ public class GameplayClient extends Client {
 
         if (command.equals("help")){
             return help();
-        } else if (command.equals("showBoard")){
-            return showBoard(new ChessBoard());
+        } else if (command.equals("show_board")){
+            ChessBoard startingBoard = new ChessBoard();
+            startingBoard.resetBoard();
+            return showBoard(startingBoard);
         } else if (command.equals("exitGame")){
             return exitGame();
         } else if (command.equals("quit")){
@@ -60,8 +64,8 @@ public class GameplayClient extends Client {
                 
                 //o\\o//o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\o//o\\
                 help - see a list of commands
-                showBoard - display the current chessboard
-                changeColors <color scheme> - change the color scheme of the board.
+                show_board - display the current chessboard
+                change_colors <color scheme> - change the color scheme of the board.
                     options: greyscale, sepia, neon.
                 exitGame - exits the game
                 quit - quit the program
@@ -88,7 +92,9 @@ public class GameplayClient extends Client {
         for(int i=1; i <= 8; i++){
             result.append(rowAsString(i, board));
         }
-        result.append(blackXAxis());
+        result.append(blackXAxis())
+                .append(RESET_BG_COLOR)
+                .append(RESET_TEXT_COLOR);
         return result.toString();
     }
 
@@ -100,18 +106,18 @@ public class GameplayClient extends Client {
         for(int i=8; i > 0; i--){
             result.append(rowAsString(i, board));
         }
-        result.append(whiteXAxis());
+        result.append(whiteXAxis())
+                .append(RESET_BG_COLOR)
+                .append(RESET_TEXT_COLOR);
         return result.toString();
     }
 
     private String whiteXAxis(){
-        return "    a" + EMPTY + " b" + EMPTY + " c" + EMPTY + " d" + EMPTY + " e"
-                + EMPTY + " f" + EMPTY + " g" + EMPTY + " h" + EMPTY + "   \n";
+        return "    a\u2003 b\u2003 c\u2003 d\u2003 e\u2003 f\u2003 g\u2003 h\u2003   \n";
     }
 
     private String blackXAxis(){
-        return "    h" + EMPTY + " g" + EMPTY + " f" + EMPTY + " e" + EMPTY + " d"
-                + EMPTY + " c" + EMPTY + " b" + EMPTY + " a" + EMPTY + "   \n";
+        return "    h\u2003 g\u2003 f\u2003 e\u2003 d\u2003 c\u2003 b\u2003 a\u2003   \n";
     }
 
     private String rowAsString(int row, ChessBoard board){
@@ -142,31 +148,31 @@ public class GameplayClient extends Client {
     private String pieceAsString(PieceType type, ChessGame.TeamColor color){
         if(color.equals(ChessGame.TeamColor.BLACK)){
             if(type.equals(PieceType.PAWN)){
-                return BLACK_PAWN;
+                return BLACK_COLOR + BLACK_PAWN;
             } else if(type.equals(PieceType.ROOK)){
-                return BLACK_ROOK;
+                return BLACK_COLOR + BLACK_ROOK;
             } else if(type.equals(PieceType.BISHOP)){
-                return BLACK_BISHOP;
+                return BLACK_COLOR + BLACK_BISHOP;
             } else if(type.equals(PieceType.KNIGHT)){
-                return BLACK_KNIGHT;
+                return BLACK_COLOR + BLACK_KNIGHT;
             } else if(type.equals(PieceType.QUEEN)){
-                return BLACK_QUEEN;
+                return BLACK_COLOR + BLACK_QUEEN;
             } else if(type.equals(PieceType.KING)){
-                return BLACK_KING;
+                return BLACK_COLOR + BLACK_KING;
             }
         } else if(color.equals(ChessGame.TeamColor.WHITE)){
             if(type.equals(PieceType.PAWN)){
-                return WHITE_PAWN;
+                return WHITE_COLOR + WHITE_PAWN;
             } else if(type.equals(PieceType.ROOK)){
-                return WHITE_ROOK;
+                return WHITE_COLOR + WHITE_ROOK;
             } else if(type.equals(PieceType.BISHOP)){
-                return WHITE_BISHOP;
+                return WHITE_COLOR + WHITE_BISHOP;
             } else if(type.equals(PieceType.KNIGHT)){
-                return WHITE_KNIGHT;
+                return WHITE_COLOR + WHITE_KNIGHT;
             } else if(type.equals(PieceType.QUEEN)){
-                return WHITE_QUEEN;
+                return WHITE_COLOR + WHITE_QUEEN;
             } else if(type.equals(PieceType.KING)){
-                return WHITE_KING;
+                return WHITE_COLOR + WHITE_KING;
             }
         }
         return EMPTY;
