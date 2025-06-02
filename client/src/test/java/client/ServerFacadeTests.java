@@ -96,7 +96,7 @@ public class ServerFacadeTests {
         try{
             facade.login(loginRequest);
         } catch (ResponseException e) {
-            Assertions.assertEquals(401, e.StatusCode());
+            Assertions.assertEquals(401, e.statusCode());
         }
         Assertions.assertThrows(Exception.class, () -> facade.login(loginRequest), "should get exception for wrong password");
     }
@@ -107,6 +107,13 @@ public class ServerFacadeTests {
         RegisterRequest request = new RegisterRequest("name", "password", "email");
         LoginResult result = facade.register(request);
         facade.logout(result.authToken());
+    }
+
+    @Test
+    @DisplayName("Logout Negative test")
+    void logoutNegTest() throws Exception {
+        Assertions.assertThrows(ResponseException.class, () -> facade.logout("nonexistentAuthToken"),
+                "can't log out if you're not logged in");
     }
 
     @Test
@@ -124,6 +131,19 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("List Games Negative Test")
+    public void listGamesNegTest() throws Exception{
+        RegisterRequest request = new RegisterRequest("name", "password", "email");
+        LoginResult result = facade.register(request);
+
+        CreateGameRequest gameRequest = new CreateGameRequest("firstGame");
+        facade.createGame(result.authToken(), gameRequest);
+
+        Assertions.assertThrows(ResponseException.class, () -> facade.listGames("badAuthToken"),
+                "Must be logged in to list games");
+    }
+
+    @Test
     @DisplayName("Create Game Test")
     public void createGameTest() throws Exception{
         RegisterRequest request = new RegisterRequest("name", "password", "email");
@@ -131,6 +151,14 @@ public class ServerFacadeTests {
 
         CreateGameRequest gameRequest = new CreateGameRequest("firstGame");
         facade.createGame(result.authToken(), gameRequest);
+    }
+
+    @Test
+    @DisplayName("Create Game Negative Test")
+    public void createGameNegTest() throws Exception{
+        CreateGameRequest gameRequest = new CreateGameRequest("firstGame");
+        Assertions.assertThrows(ResponseException.class, () -> facade.createGame("badAuthToken", gameRequest),
+                "Need to be logged in to make a game");
     }
 
     @Test
@@ -145,7 +173,19 @@ public class ServerFacadeTests {
         facade.joinGame(result.authToken(), new JoinGameRequest("WHITE", gameResult.gameID()));
     }
 
-// still need neg tests for join, create, list, clear, and logout.
+    @Test
+    @DisplayName("Join Game Negative Test")
+    public void joinGameNegTest() throws Exception{
+        RegisterRequest request = new RegisterRequest("name", "password", "email");
+        LoginResult result = facade.register(request);
+
+        CreateGameRequest gameRequest = new CreateGameRequest("firstGame");
+        CreateGameResult gameResult = facade.createGame(result.authToken(), gameRequest);
+
+        facade.joinGame(result.authToken(), new JoinGameRequest("WHITE", gameResult.gameID()));
+        Assertions.assertThrows(ResponseException.class, () -> facade.joinGame(result.authToken(), new JoinGameRequest("WHITE", gameResult.gameID())),
+                "should throw exception for joining game that's already occupied");
+    }
 
 
 
