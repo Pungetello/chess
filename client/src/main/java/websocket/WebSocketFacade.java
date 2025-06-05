@@ -1,8 +1,9 @@
-package ui;
+package websocket;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
 import websocket.commands.*;
+import websocket.messages.*;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -16,7 +17,7 @@ public class WebSocketFacade extends Endpoint {
     NotificationHandler notificationHandler;
 
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException {
+    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException { // Wherever this is created, it will need to pass in a notification handler, which can be the REPL, as that's what notifies people.
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -28,8 +29,8 @@ public class WebSocketFacade extends Endpoint {
             //set message handler
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
-                public void onMessage(String message) {
-                    Notification notification = new Gson().fromJson(message, Notification.class);
+                public void onMessage(String message) { // do different thing depending on if it's loadgame, notification, error.
+                    NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
                     notificationHandler.notify(notification);
                 }
             });
@@ -43,10 +44,12 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void enterPetShop(String visitorName) throws ResponseException {
+    //connect, makemove, leave, and resign
+
+    public void connect(String username, String authToken, int gameID) throws ResponseException {
         try {
-            var action = new Action(Action.Type.ENTER, visitorName); // replace with command
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID); // replace with command
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }

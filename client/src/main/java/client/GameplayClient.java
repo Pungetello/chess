@@ -8,6 +8,8 @@ import chess.ChessPosition;
 import repl.Repl;
 import results.Game;
 import ui.ServerFacade;
+import websocket.WebSocketFacade;
+
 import static ui.EscapeSequences.*;
 
 public class GameplayClient extends Client {
@@ -17,6 +19,8 @@ public class GameplayClient extends Client {
     Repl repl;
     String playerColor;
     Game game;
+    WebSocketFacade ws;
+    String username;
     String bgColor = RESET_BG_COLOR;
     String darkSquare = SET_BG_COLOR_DARK_GREY;
     String lightSquare = SET_BG_COLOR_LIGHT_GREY;
@@ -24,13 +28,17 @@ public class GameplayClient extends Client {
     String whiteColor = SET_TEXT_COLOR_WHITE;
     String blackColor = SET_TEXT_COLOR_BLACK;
 
-    public GameplayClient(String serverURL, Repl repl, String authToken, String playerColor, Game game){
+    public GameplayClient(String serverURL, Repl repl, String authToken, String username, String playerColor, Game game) throws Exception{
         facade = new ServerFacade(serverURL);
         this.authToken = authToken;
         this.repl = repl;
         this.serverURL = serverURL;
         this.playerColor = playerColor;
         this.game = game;
+        this.username = username;
+
+        ws = new WebSocketFacade(this.serverURL, this.repl);
+        ws.connect(this.username, this.authToken, this.game.gameID());
     }
 
     public String eval(String line) throws Exception {
@@ -52,6 +60,31 @@ public class GameplayClient extends Client {
         } else {
             return "Command not recognized. Type 'help' for list of commands.";
         }
+    }
+
+    public String help() {
+        return """
+                
+                //o\\o//o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\o//o\\
+                help - see a list of commands
+                show_board - display the current chessboard
+                change_colors <color scheme> - change the color scheme of the board.
+                    options: greyscale (default), vibrant.
+                exit_game - exits the game
+                resign - forfeit the match
+                make_move <start> <end> - move a piece if it is your turn
+                quit - quit the program
+                
+                More commands to come once gameplay is implemented!
+                \\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//
+                """;
+    }
+
+    public String exitGame() throws Exception{
+
+
+        repl.client = new LoggedInClient(serverURL, repl, authToken, username);
+        return "Successfully exited game " + game.gameName();
     }
 
     public String changeColors(String[] tokens){
@@ -77,27 +110,6 @@ public class GameplayClient extends Client {
             return "Color scheme not recognized. Options: greyscale, vibrant";
         }
         return "Color scheme of board successfully changed to " + colorScheme;
-    }
-
-    public String exitGame() throws Exception{
-        repl.client = new LoggedInClient(serverURL, repl, authToken);
-        return "Successfully exited game " + game.gameName();
-    }
-
-    public String help() {
-        return """
-                
-                //o\\o//o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\o//o\\
-                help - see a list of commands
-                show_board - display the current chessboard
-                change_colors <color scheme> - change the color scheme of the board.
-                    options: greyscale (default), vibrant.
-                exit_game - exits the game
-                quit - quit the program
-                
-                More commands to come once gameplay is implemented!
-                \\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//
-                """;
     }
 
     public String showBoard(ChessBoard board) {
@@ -157,9 +169,7 @@ public class GameplayClient extends Client {
             for (int i = 8; i >= 1; i--) {
                 result.append(squareAsString(row, i, board));
             }
-
         }
-
         result.append(label);
         result.append("\n");
         return result.toString();

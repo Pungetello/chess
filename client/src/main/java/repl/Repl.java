@@ -1,10 +1,11 @@
 package repl;
 
 import client.*;
-
+import websocket.NotificationHandler;
+import websocket.messages.NotificationMessage;
 import java.util.Scanner;
 
-public class Repl {
+public class Repl implements NotificationHandler {
 
     public Client client;
 
@@ -33,5 +34,9 @@ public class Repl {
         System.out.println();
     }
 
+    public void notify(NotificationMessage notification){
+        System.out.println(notification.getMessage());
+        System.out.print("\n>>> ");
+    }
 
 }

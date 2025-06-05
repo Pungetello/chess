@@ -1,4 +1,4 @@
-package ui;
+package websocket;
 
 import websocket.messages.NotificationMessage;
 

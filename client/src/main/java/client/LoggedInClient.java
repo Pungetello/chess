@@ -13,12 +13,14 @@ public class LoggedInClient extends Client {
     String serverURL;
     Repl repl;
     List<Game> listedGames;
+    String username;
 
-    public LoggedInClient(String serverURL, Repl repl, String authToken){
+    public LoggedInClient(String serverURL, Repl repl, String authToken, String username){
         facade = new ServerFacade(serverURL);
         this.authToken = authToken;
         this.repl = repl;
         this.serverURL = serverURL;
+        this.username = username;
     }
 
     public String eval(String line) throws Exception {
@@ -129,7 +131,7 @@ public class LoggedInClient extends Client {
         JoinGameRequest request = new JoinGameRequest(color, gameID);
         try{
             facade.joinGame(authToken,request);
-            repl.client = new GameplayClient(serverURL, repl, authToken, color, listedGames.get(gameNum));
+            repl.client = new GameplayClient(serverURL, repl, authToken, username, color, listedGames.get(gameNum));
             return "Successfully joined game " + listedGames.get(gameNum).gameName() + " as " + color;
         } catch (ResponseException ex){
             int status = ex.statusCode();
@@ -153,7 +155,7 @@ public class LoggedInClient extends Client {
         String color = "OBSERVER";
         int gameID = listedGames.get(gameNum).gameID(); //what to do with this?
 
-        repl.client = new GameplayClient(serverURL, repl, authToken, color, listedGames.get(gameNum)); //may need to change this
+        repl.client = new GameplayClient(serverURL, repl, authToken, username, color, listedGames.get(gameNum)); //may need to change this
         return "Now observing game " + listedGames.get(gameNum).gameName();
     }
 }

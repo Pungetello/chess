@@ -54,7 +54,7 @@ public class LoggedOutClient extends Client {
         LoginRequest request = new LoginRequest(username, password);
         try{
             LoginResult result = facade.login(request);
-            repl.client = new LoggedInClient(serverURL, repl, result.authToken());
+            repl.client = new LoggedInClient(serverURL, repl, result.authToken(), request.username());
             return "Successfully logged in as user " + result.username();
         } catch (ResponseException ex){
             int status = ex.statusCode();
@@ -80,7 +80,7 @@ public class LoggedOutClient extends Client {
 
         try {
             LoginResult result = new ServerFacade(serverURL).register(request);
-            repl.client = new LoggedInClient(serverURL, repl, result.authToken());
+            repl.client = new LoggedInClient(serverURL, repl, result.authToken(), request.username());
             return "Successfully registered and logged in as user " + result.username();
         } catch (ResponseException ex){
             int status = ex.statusCode();
