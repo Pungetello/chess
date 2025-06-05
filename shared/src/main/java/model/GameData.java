@@ -8,7 +8,7 @@ public class GameData {
     private String whiteUsername;
     private String blackUsername;
     private String gameName;
-    private ChessGame game;
+    private ChessGame game = new ChessGame();
 
     public int getGameID() {
         return gameID;

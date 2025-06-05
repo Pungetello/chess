@@ -3,10 +3,14 @@ package server;
 import dataaccess.*;
 import handler.*;
 import spark.*;
+import websocket.WebSocketHandler;
+
 import java.sql.SQLException;
 import static dataaccess.DatabaseManager.createDatabase;
 
 public class Server {
+
+    private WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     public int run(int desiredPort) {
 
@@ -32,6 +36,8 @@ public class Server {
     }
 
     private void createRoutes(){
+        Spark.webSocket("/ws", webSocketHandler);
+
         Spark.delete("/db", Handler::handleClear);
         Spark.post("/user", Handler::handleRegister);
         Spark.post("/session", Handler::handleLogin);

@@ -1,8 +1,9 @@
 package websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.*;
-import exception.ResponseException;
+//import ui.ResponseException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -19,21 +20,28 @@ public class WebSocketHandler {
     private final ConnectionManager connections = new ConnectionManager();
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException {
+    public void onMessage(Session session, String message) throws Exception {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+
         if (command.getCommandType() == UserGameCommand.CommandType.CONNECT){
-            connect(command.getAuthToken());
+            String username = new SQLAuthDAO().getAuth(command.getAuthToken()).getUsername();
+            connect(username, session, command.getGameID());
         }//else if (the other command types)
     }
 
-    private void connect(String username, Session session, int gameID) throws IOException {
+    private void connect(String username, Session session, int gameID) throws Exception {
         connections.add(username, session, gameID);
         var message = username + " has joined the game as ";
-        var notification = new Notification(Notification.Type.ARRIVAL, message);
-        connections.broadcast(visitorName, notification);
+        var notification = new NotificationMessage(message);
+        connections.broadcast(username, notification, gameID); //notify all in game, excluding the user
+
+        ChessGame game = new SQLGameDAO().getGame(gameID).getGame();
+        LoadGameMessage response = new LoadGameMessage(game);
+
+        session.getRemote().sendString(new Gson().toJson(response));
     }
 
-    private void exit(String visitorName) throws IOException {
+    /*private void exit(String visitorName) throws IOException {
         connections.remove(visitorName);
         var message = String.format("%s left the shop", visitorName);
         var notification = new Notification(Notification.Type.DEPARTURE, message);
@@ -48,5 +56,5 @@ public class WebSocketHandler {
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
-    }
+    }*/
 }

@@ -19,11 +19,11 @@ public class ConnectionManager {
         connections.remove(visitorName);
     }
 
-    public void broadcast(String excludeUser, NotificationMessage notification) throws IOException {
+    public void broadcast(String excludeUser, NotificationMessage notification, int gameID) throws IOException {
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
-                if (!c.username.equals(excludeUser)) {
+                if (!c.username.equals(excludeUser) && c.gameID == gameID) { //only broadcasts to those in the game
                     c.send(notification.toString());
                 }
             } else {
