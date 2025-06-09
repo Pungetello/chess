@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.*;
 //import ui.ResponseException;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -31,12 +32,19 @@ public class WebSocketHandler {
 
     private void connect(String username, Session session, int gameID) throws Exception {
         connections.add(username, session, gameID);
-        var message = username + " has joined the game as ";
+        GameData game = new SQLGameDAO().getGame(gameID);
+        String color = "observer";
+        if (game.getWhiteUsername().equals(username)){
+            color = "white";
+        } else if (game.getBlackUsername().equals(username)){
+            color = "black";
+        }
+        var message = username + " has joined the game as " + color;
         var notification = new NotificationMessage(message);
         connections.broadcast(username, notification, gameID); //notify all in game, excluding the user
+        ChessGame gameBoard = game.getGame();
 
-        ChessGame game = new SQLGameDAO().getGame(gameID).getGame();
-        LoadGameMessage response = new LoadGameMessage(game);
+        LoadGameMessage response = new LoadGameMessage(gameBoard);
 
         session.getRemote().sendString(new Gson().toJson(response));
     }

@@ -20,7 +20,6 @@ public class GameplayClient extends Client {
     String playerColor;
     Game game;
     WebSocketFacade ws;
-    String username;
     String bgColor = RESET_BG_COLOR;
     String darkSquare = SET_BG_COLOR_DARK_GREY;
     String lightSquare = SET_BG_COLOR_LIGHT_GREY;
@@ -28,17 +27,16 @@ public class GameplayClient extends Client {
     String whiteColor = SET_TEXT_COLOR_WHITE;
     String blackColor = SET_TEXT_COLOR_BLACK;
 
-    public GameplayClient(String serverURL, Repl repl, String authToken, String username, String playerColor, Game game) throws Exception{
+    public GameplayClient(String serverURL, Repl repl, String authToken, String playerColor, Game game) throws Exception{
         facade = new ServerFacade(serverURL);
         this.authToken = authToken;
         this.repl = repl;
         this.serverURL = serverURL;
         this.playerColor = playerColor;
         this.game = game;
-        this.username = username;
 
         ws = new WebSocketFacade(this.serverURL, this.repl);
-        ws.connect(this.username, this.authToken, this.game.gameID());
+        ws.connect(this.authToken, this.game.gameID());
     }
 
     public String eval(String line) throws Exception {
@@ -83,7 +81,7 @@ public class GameplayClient extends Client {
     public String exitGame() throws Exception{
 
 
-        repl.client = new LoggedInClient(serverURL, repl, authToken, username);
+        repl.client = new LoggedInClient(serverURL, repl, authToken);
         return "Successfully exited game " + game.gameName();
     }
 

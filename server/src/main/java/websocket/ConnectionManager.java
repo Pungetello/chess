@@ -1,5 +1,6 @@
 package websocket;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.*;
 
@@ -24,7 +25,7 @@ public class ConnectionManager {
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (!c.username.equals(excludeUser) && c.gameID == gameID) { //only broadcasts to those in the game
-                    c.send(notification.toString());
+                    c.send(notification);
                 }
             } else {
                 removeList.add(c);
