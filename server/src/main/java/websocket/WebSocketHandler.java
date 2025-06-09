@@ -24,29 +24,37 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws Exception {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
 
-        if (command.getCommandType() == UserGameCommand.CommandType.CONNECT){
-            String username = new SQLAuthDAO().getAuth(command.getAuthToken()).getUsername();
-            connect(username, session, command.getGameID());
+        if (command.getCommandType() == UserGameCommand.CommandType.CONNECT) {
+            try {
+                String username = new SQLAuthDAO().getAuth(command.getAuthToken()).getUsername();
+                connect(username, session, command.getGameID());
+            } catch (DataAccessException ex){
+                sendError(session, "Error: bad auth token");
+            }
         }//else if (the other command types)
     }
 
     private void connect(String username, Session session, int gameID) throws Exception {
         connections.add(username, session, gameID);
-        GameData game = new SQLGameDAO().getGame(gameID);
-        String color = "observer";
-        if (game.getWhiteUsername().equals(username)){
-            color = "white";
-        } else if (game.getBlackUsername().equals(username)){
-            color = "black";
+        try {
+            GameData game = new SQLGameDAO().getGame(gameID);
+            String color = "observer";
+            if (game.getWhiteUsername().equals(username)) {
+                color = "white";
+            } else if (game.getBlackUsername().equals(username)) {
+                color = "black";
+            }
+            var message = username + " has joined the game as " + color;
+            var notification = new NotificationMessage(message);
+            connections.broadcast(username, notification, gameID); //notify all in game, excluding the user
+            ChessGame gameBoard = game.getGame();
+
+            LoadGameMessage response = new LoadGameMessage(gameBoard);
+
+            session.getRemote().sendString(new Gson().toJson(response));
+        } catch (DataAccessException ex){
+            sendError(session, "Error: invalid game ID");
         }
-        var message = username + " has joined the game as " + color;
-        var notification = new NotificationMessage(message);
-        connections.broadcast(username, notification, gameID); //notify all in game, excluding the user
-        ChessGame gameBoard = game.getGame();
-
-        LoadGameMessage response = new LoadGameMessage(gameBoard);
-
-        session.getRemote().sendString(new Gson().toJson(response));
     }
 
     /*private void exit(String visitorName) throws IOException {
@@ -65,4 +73,9 @@ public class WebSocketHandler {
             throw new ResponseException(500, ex.getMessage());
         }
     }*/
+
+    private void sendError(Session session, String errorMessage) throws Exception{
+        ErrorMessage error = new ErrorMessage(errorMessage);
+        session.getRemote().sendString(new Gson().toJson(error));
+    }
 }
