@@ -23,27 +23,40 @@ public class WebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
-
-        if (command.getCommandType() == UserGameCommand.CommandType.CONNECT) {
-            try {
-                String username = new SQLAuthDAO().getAuth(command.getAuthToken()).getUsername();
-                connect(username, session, command.getGameID());
-            } catch (DataAccessException ex){
-                sendError(session, "Error: bad auth token");
-            }
-        }//else if (the other command types)
-    }
-
-    private void connect(String username, Session session, int gameID) throws Exception {
-        connections.add(username, session, gameID);
+        String username;
+        GameData game;
+        String color;
         try {
-            GameData game = new SQLGameDAO().getGame(gameID);
-            String color = "observer";
+            username = new SQLAuthDAO().getAuth(command.getAuthToken()).getUsername();
+            game = new SQLGameDAO().getGame(command.getGameID());
+            color = "observer";
             if (game.getWhiteUsername().equals(username)) {
                 color = "white";
             } else if (game.getBlackUsername().equals(username)) {
                 color = "black";
             }
+
+            if (command.getCommandType() == UserGameCommand.CommandType.CONNECT) {
+                connect(username, session, command.getGameID(), game, color);
+            }else if (command.getCommandType() == UserGameCommand.CommandType.MAKE_MOVE){
+                makeMove(color, command.getGameID(), game);
+            } else if (command.getCommandType() == UserGameCommand.CommandType.LEAVE){
+                //do stuff
+            } else if (command.getCommandType() == UserGameCommand.CommandType.RESIGN){
+                //do stuff
+            }
+        } catch (DataAccessException ex){
+            if (ex.getMessage().equals("Game does not exist")) {
+                sendError(session, "Error: bad auth token");
+            } else if (ex.getMessage().equals("Unauthorized")){
+                sendError(session, "Error: invalid game ID");
+            }
+        }
+    }
+
+    private void connect(String username, Session session, int gameID, GameData game, String color) throws Exception {
+        connections.add(username, session, gameID);
+
             var message = username + " has joined the game as " + color;
             var notification = new NotificationMessage(message);
             connections.broadcast(username, notification, gameID); //notify all in game, excluding the user
@@ -52,9 +65,13 @@ public class WebSocketHandler {
             LoadGameMessage response = new LoadGameMessage(gameBoard);
 
             session.getRemote().sendString(new Gson().toJson(response));
-        } catch (DataAccessException ex){
-            sendError(session, "Error: invalid game ID");
-        }
+    }
+
+    private void makeMove(String color, int gameID, GameData data) throws Exception {
+        String message = color + " makes a move";
+        new SQLGameDAO().updateGame(gameID, data);
+        var notification = new NotificationMessage(data.getGame().toString());//change the toString method to match the showBoard thing?
+        connections.broadcast(null, notification, gameID);
     }
 
     /*private void exit(String visitorName) throws IOException {

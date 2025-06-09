@@ -1,10 +1,7 @@
 package client;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
+import chess.*;
 import chess.ChessPiece.*;
-import chess.ChessPosition;
 import repl.Repl;
 import results.Game;
 import ui.ServerFacade;
@@ -51,8 +48,12 @@ public class GameplayClient extends Client {
             return showBoard(startingBoard);
         } else if (command.equals("change_colors")){
             return changeColors(tokens);
-        } else if (command.equals("exit_game")){
+        } else if (command.equals("exit_game")) {
             return exitGame();
+        }else if (command.equals("resign")){
+            //return resign();
+        } else if (command.equals("make_move")){
+            return makeMove(tokens);
         } else if (command.equals("quit")){
             return "quit";
         } else {
@@ -78,9 +79,56 @@ public class GameplayClient extends Client {
                 """;
     }
 
+    public String makeMove(String[] tokens) throws Exception {
+        if(tokens.length != 3){
+            return "Usage: make_move <start> <end>";
+        }
+        ChessPosition start = parseCoords(tokens[1]);
+        ChessPosition end = parseCoords(tokens[2]);
+        if (start == null || end == null){
+            return "Coords should be letter-number pairs, i.e a7 b5";
+        }
+        //check if move is valid
+        ChessMove move = new ChessMove(start, end, null); //need to add pawn promotion feature
+        ws = new WebSocketFacade(this.serverURL, this.repl);
+        ws.makeMove(this.authToken, this.game.gameID(), move);
+        return "Made move successfully";
+    }
+
+    private ChessPosition parseCoords(String coord){
+        if (coord.length() != 2){
+            return null;
+        }
+        try{
+            int row = Integer.parseInt(coord[1]);//figure out syntax for this
+            int col;
+            char colLetter = coord[0];
+            if (colLetter == 'a'){
+                col = 1;
+            } else if (colLetter == 'b'){
+                col = 2;
+            } else if (colLetter == 'c'){
+                col = 3;
+            } else if (colLetter == 'd'){
+                col = 4;
+            } else if (colLetter == 'e'){
+                col = 5;
+            } else if (colLetter == 'f'){
+                col = 6;
+            } else if (colLetter == 'g'){
+                col = 7;
+            } else if (colLetter == 'h'){
+                col = 8;
+            } else {
+                return null;
+            }
+            return new ChessPosition(row, col);
+        } catch (NumberFormatException ex){
+            return null;
+        }
+    }
+
     public String exitGame() throws Exception{
-
-
         repl.client = new LoggedInClient(serverURL, repl, authToken);
         return "Successfully exited game " + game.gameName();
     }
