@@ -1,7 +1,9 @@
 package websocket;
 
 import chess.ChessMove;
+import client.GameplayClient;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import exception.ResponseException;
 import websocket.commands.*;
 import websocket.messages.*;
@@ -16,10 +18,12 @@ public class WebSocketFacade extends Endpoint {
 
     Session session;
     NotificationHandler notificationHandler;
+    GameplayClient client;
 
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException { // Wherever this is created, it will need to pass in a notification handler, which can be the REPL, as that's what notifies people.
+    public WebSocketFacade(GameplayClient client, String url, NotificationHandler notificationHandler) throws ResponseException { // Wherever this is created, it will need to pass in a notification handler, which can be the REPL, as that's what notifies people.
         try {
+            this.client = client;
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
             this.notificationHandler = notificationHandler;
@@ -29,10 +33,22 @@ public class WebSocketFacade extends Endpoint {
 
             //set message handler
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(ServerMessage.class, new ServerMessageDeserializer())
+                        .create();
+
                 @Override
-                public void onMessage(String message) { // do different thing depending on if it's loadgame, notification, error.
-                    NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
-                    notificationHandler.notify(notification);
+                public void onMessage(String message) {
+                    ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
+
+                    if (serverMessage instanceof NotificationMessage) {
+                        notificationHandler.notify((NotificationMessage) serverMessage);
+                    } else if (serverMessage instanceof LoadGameMessage) {
+                        client.showBoard(((LoadGameMessage) serverMessage).getGame().getBoard());
+                    } else if (serverMessage instanceof ErrorMessage) {
+                        notificationHandler.notify(new NotificationMessage(((ErrorMessage) serverMessage).getMessage()));//what's even the point of having two classes.
+                    }
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {

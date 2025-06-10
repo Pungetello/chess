@@ -32,7 +32,7 @@ public class GameplayClient extends Client {
         this.playerColor = playerColor;
         this.game = game;
 
-        ws = new WebSocketFacade(this.serverURL, this.repl);
+        ws = new WebSocketFacade(this, this.serverURL, this.repl);
         ws.connect(this.authToken, this.game.gameID());
     }
 
@@ -88,9 +88,8 @@ public class GameplayClient extends Client {
         if (start == null || end == null){
             return "Coords should be letter-number pairs, i.e a7 b5";
         }
-        //check if move is valid
         ChessMove move = new ChessMove(start, end, null); //need to add pawn promotion feature
-        ws = new WebSocketFacade(this.serverURL, this.repl);
+        ws = new WebSocketFacade(this, this.serverURL, this.repl);
         ws.makeMove(this.authToken, this.game.gameID(), move);
         return "Made move successfully";
     }
@@ -99,33 +98,34 @@ public class GameplayClient extends Client {
         if (coord.length() != 2){
             return null;
         }
-        try{
-            int row = Integer.parseInt(coord[1]);//figure out syntax for this
-            int col;
-            char colLetter = coord[0];
-            if (colLetter == 'a'){
-                col = 1;
-            } else if (colLetter == 'b'){
-                col = 2;
-            } else if (colLetter == 'c'){
-                col = 3;
-            } else if (colLetter == 'd'){
-                col = 4;
-            } else if (colLetter == 'e'){
-                col = 5;
-            } else if (colLetter == 'f'){
-                col = 6;
-            } else if (colLetter == 'g'){
-                col = 7;
-            } else if (colLetter == 'h'){
-                col = 8;
+            char rowChar = coord.charAt(1);
+            if (Character.isDigit(rowChar)) {
+                int row = rowChar - '0';
+                int col;
+                char colLetter = coord.charAt(0);
+                if (colLetter == 'a') {
+                    col = 1;
+                } else if (colLetter == 'b') {
+                    col = 2;
+                } else if (colLetter == 'c') {
+                    col = 3;
+                } else if (colLetter == 'd') {
+                    col = 4;
+                } else if (colLetter == 'e') {
+                    col = 5;
+                } else if (colLetter == 'f') {
+                    col = 6;
+                } else if (colLetter == 'g') {
+                    col = 7;
+                } else if (colLetter == 'h') {
+                    col = 8;
+                } else {
+                    return null;
+                }
+                return new ChessPosition(row, col);
             } else {
                 return null;
             }
-            return new ChessPosition(row, col);
-        } catch (NumberFormatException ex){
-            return null;
-        }
     }
 
     public String exitGame() throws Exception{
@@ -164,7 +164,6 @@ public class GameplayClient extends Client {
         } else {
             return printWhiteBoard(board);
         }
-
     }
 
     private String printBlackBoard(ChessBoard board){

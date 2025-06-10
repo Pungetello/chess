@@ -1,6 +1,8 @@
 package websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.*;
 //import ui.ResponseException;
@@ -39,7 +41,8 @@ public class WebSocketHandler {
             if (command.getCommandType() == UserGameCommand.CommandType.CONNECT) {
                 connect(username, session, command.getGameID(), game, color);
             }else if (command.getCommandType() == UserGameCommand.CommandType.MAKE_MOVE){
-                makeMove(color, command.getGameID(), game);
+                MakeMoveCommand moveCommand = (MakeMoveCommand) command;
+                makeMove(username, session, color, command.getGameID(), game, moveCommand.getMove());
             } else if (command.getCommandType() == UserGameCommand.CommandType.LEAVE){
                 //do stuff
             } else if (command.getCommandType() == UserGameCommand.CommandType.RESIGN){
@@ -67,11 +70,19 @@ public class WebSocketHandler {
             session.getRemote().sendString(new Gson().toJson(response));
     }
 
-    private void makeMove(String color, int gameID, GameData data) throws Exception {
-        String message = color + " makes a move";
-        new SQLGameDAO().updateGame(gameID, data);
-        var notification = new NotificationMessage(data.getGame().toString());//change the toString method to match the showBoard thing?
-        connections.broadcast(null, notification, gameID);
+    private void makeMove(String username, Session session, String color, int gameID, GameData data, ChessMove move) throws Exception {
+        try {
+            data.getGame().makeMove(move);
+            String message = color + " makes a move";
+            new SQLGameDAO().updateGame(gameID, data);
+            var gameMessage = new LoadGameMessage(data.getGame());
+            connections.broadcast(null, gameMessage, gameID);
+            var notification = new NotificationMessage(message);
+            connections.broadcast(username, notification, gameID);
+
+        } catch (InvalidMoveException ex){
+            sendError(session, "Error: invalid move");
+        }
     }
 
     /*private void exit(String visitorName) throws IOException {
