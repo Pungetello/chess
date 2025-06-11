@@ -12,6 +12,7 @@ import java.util.Objects;
  */
 public class ChessGame implements Cloneable{
 
+    private Boolean closed = false;
     private TeamColor teamTurn;
     private ChessBoard board;
 
@@ -76,6 +77,9 @@ public class ChessGame implements Cloneable{
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if(closed){
+            throw new InvalidMoveException();
+        }
         ChessPiece piece = this.getBoard().getPiece(move.getStartPosition());
         if(piece == null || this.getTeamTurn() != piece.getTeamColor()){
             throw new InvalidMoveException();
@@ -208,6 +212,10 @@ public class ChessGame implements Cloneable{
      */
     public void setBoard(ChessBoard board) {
         this.board = board;
+    }
+
+    public void closeGame(){
+        closed = true;
     }
 
     /**

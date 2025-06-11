@@ -3,7 +3,6 @@ package websocket;
 import chess.ChessMove;
 import client.GameplayClient;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import exception.ResponseException;
 import websocket.commands.*;
 import websocket.messages.*;
@@ -39,11 +38,15 @@ public class WebSocketFacade extends Endpoint {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
 
                     if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-                        notificationHandler.notify((NotificationMessage) serverMessage);
-                    } else if (serverMessage instanceof LoadGameMessage) {
-                        client.showBoard(((LoadGameMessage) serverMessage).getGame().getBoard());
+                        NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
+                        notificationHandler.notify(notification);
+                    } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+                        LoadGameMessage loadGame = new Gson().fromJson(message, LoadGameMessage.class);
+                        client.setBoard(loadGame.getGame().getBoard());
+                        client.showBoard(loadGame.getGame().getBoard());
                     } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
-                        notificationHandler.notify(new NotificationMessage(serverMessage.g());//what's even the point of having two classes.
+                        ErrorMessage error = new Gson().fromJson(message, ErrorMessage.class);
+                        notificationHandler.notify(new NotificationMessage(error.getMessage()));//what's even the point of having two classes.
                     }
                 }
             });
@@ -75,6 +78,14 @@ public class WebSocketFacade extends Endpoint {
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
+    }
+
+    public void leave(String authToken, int gameID){
+
+    }
+
+    public void resign(String authToken, int gameID){
+
     }
 
 }

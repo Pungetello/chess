@@ -23,6 +23,7 @@ public class GameplayClient extends Client {
     String coordsColor = RESET_TEXT_COLOR;
     String whiteColor = SET_TEXT_COLOR_WHITE;
     String blackColor = SET_TEXT_COLOR_BLACK;
+    ChessBoard board = new ChessBoard();
 
     public GameplayClient(String serverURL, Repl repl, String authToken, String playerColor, Game game) throws Exception{
         facade = new ServerFacade(serverURL);
@@ -43,9 +44,7 @@ public class GameplayClient extends Client {
         if (command.equals("help")){
             return help();
         } else if (command.equals("show_board")) {
-            ChessBoard startingBoard = new ChessBoard();
-            startingBoard.resetBoard();
-            return showBoard(startingBoard);
+            return showBoard(board);
         } else if (command.equals("change_colors")){
             return changeColors(tokens);
         } else if (command.equals("leave_game")) {
@@ -149,13 +148,22 @@ public class GameplayClient extends Client {
         return result;
     }
 
-    public String leaveGame() throws Exception{
-        repl.client = new LoggedInClient(serverURL, repl, authToken); // update for websocket
-        return "Successfully exited game " + game.gameName();
+    public void setBoard(ChessBoard board){
+        this.board = board;
     }
 
-    public String resign() {
-        return "Not yet implemented";
+    public String leaveGame() throws Exception{
+        ws = new WebSocketFacade(this, this.serverURL, this.repl);
+        ws.leave(this.authToken, this.game.gameID());
+
+        repl.client = new LoggedInClient(serverURL, repl, authToken); // update for websocket
+        return "Successfully exited " + game.gameName();
+    }
+
+    public String resign() throws Exception{
+        ws = new WebSocketFacade(this, this.serverURL, this.repl);
+        ws.resign(this.authToken, this.game.gameID());
+        return "Successfully resigned from " + this.game.gameName();
     }
 
     public String changeColors(String[] tokens){

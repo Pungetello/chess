@@ -59,17 +59,21 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect(String username, Session session, int gameID, GameData game, ChessGame.TeamColor color) throws Exception {
+    private void connect(String username, Session session, int gameID, GameData game, ChessGame.TeamColor teamColor) throws Exception {
         connections.add(username, session, gameID);
+        String color = teamColor.toString().toLowerCase();
+        if(color.isEmpty()){
+            color = "observer";
+        }
 
-            var message = username + " has joined the game as " + color;
-            var notification = new NotificationMessage(message);
-            connections.broadcast(username, notification, gameID); //notify all in game, excluding the user
-            ChessGame gameBoard = game.getGame();
+        var message = username + " has joined the game as " + color;
+        var notification = new NotificationMessage(message);
+        connections.broadcast(username, notification, gameID); //notify all in game, excluding the user
+        ChessGame gameBoard = game.getGame();
 
-            LoadGameMessage response = new LoadGameMessage(gameBoard);
+        LoadGameMessage response = new LoadGameMessage(gameBoard);
 
-            session.getRemote().sendString(new Gson().toJson(response));
+        session.getRemote().sendString(new Gson().toJson(response));
     }
 
     private void makeMove(String username, Session session, ChessGame.TeamColor color, int gameID, GameData data, ChessMove move) throws Exception {
@@ -98,24 +102,28 @@ public class WebSocketHandler {
     }
 
     private void checkSpecialConditions(ChessGame game, ChessGame.TeamColor color, int gameID) throws Exception{
-        ChessGame.TeamColor otherTeam = ChessGame.TeamColor.WHITE;
+        ChessGame.TeamColor otherColor;
+        String otherUsername;
         if(color == ChessGame.TeamColor.WHITE){
-            otherTeam = ChessGame.TeamColor.BLACK;
+            otherUsername = new SQLGameDAO().getGame(gameID).getBlackUsername();
+            otherColor = ChessGame.TeamColor.BLACK;
+        }else{
+            otherUsername = new SQLGameDAO().getGame(gameID).getWhiteUsername();
+            otherColor = ChessGame.TeamColor.WHITE;
         }
 
-        if (game.isInCheckmate(otherTeam)){
-            var checkMateNotification = new NotificationMessage(otherTeam + " is in checkmate!");
+        if (game.isInCheckmate(otherColor)){
+            var checkMateNotification = new NotificationMessage(otherUsername + " is in checkmate!");
             connections.broadcast(null, checkMateNotification, gameID);
             //finish game
-        } else if (game.isInStalemate(otherTeam)){
-            var stalemateNotification = new NotificationMessage(otherTeam + " is in stalemate!");
+        } else if (game.isInStalemate(otherColor)){
+            var stalemateNotification = new NotificationMessage(otherUsername + " is in stalemate!");
             connections.broadcast(null, stalemateNotification, gameID);
             //finish game
-        } else if (game.isInCheck(otherTeam)){
-            var checkNotification = new NotificationMessage(otherTeam + " is in check!"); //maybe this is unproffessional to have, but as a bad chess player I'd want it
+        } else if (game.isInCheck(otherColor)){
+            var checkNotification = new NotificationMessage(otherUsername + " is in check!");
             connections.broadcast(null, checkNotification, gameID);
         }
-
     }
 
     private void leave(String username, Session session){
