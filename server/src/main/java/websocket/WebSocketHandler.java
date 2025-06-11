@@ -118,28 +118,26 @@ public class WebSocketHandler {
         }
 
         if (game.isInCheckmate(otherColor)){
-            var checkMateNotification = new NotificationMessage(otherUsername + " is in checkmate!");
+            var checkMateNotification = new NotificationMessage(otherUsername + " is in checkmate, " + color.toString().toLowerCase() + " wins!");
             connections.broadcast(null, checkMateNotification, gameID);
-            endGame(gameID, otherColor);
+            endGame(gameID);
         } else if (game.isInStalemate(otherColor)){
-            var stalemateNotification = new NotificationMessage(otherUsername + " is in stalemate!");
+            var stalemateNotification = new NotificationMessage(otherUsername + " is in stalemate, " + color.toString().toLowerCase() + " wins!");
             connections.broadcast(null, stalemateNotification, gameID);
-            endGame(gameID, otherColor);
+            endGame(gameID);
         } else if (game.isInCheck(otherColor)){
-            var checkNotification = new NotificationMessage(otherUsername + " is in check!");
+            var checkNotification = new NotificationMessage(otherUsername + " is in check");
             connections.broadcast(null, checkNotification, gameID);
         }
     }
 
-    private void endGame(int gameID, ChessGame.TeamColor loserColor) throws Exception{
+    private void endGame(int gameID) throws Exception{
         SQLGameDAO dao = new SQLGameDAO();
         GameData data = dao.getGame(gameID);
         ChessGame game = data.getGame();
         game.closeGame();
         data.setGame(game);
         dao.updateGame(gameID, data);
-        NotificationMessage notification = new NotificationMessage(loserColor.toString().toLowerCase() + " wins!");
-        connections.broadcast(null, notification, gameID);
     }
 
     private void leave(String username, ChessGame.TeamColor color, int gameID) throws Exception{
@@ -163,10 +161,14 @@ public class WebSocketHandler {
             sendError(session, "Error: type 'leave' to stop observing the game");
             return;
         }
+        String winner = "Black";
+        if (color == ChessGame.TeamColor.WHITE){
+            winner = "White";
+        }
 
-        NotificationMessage notification = new NotificationMessage(username + " has resigned!");
+        NotificationMessage notification = new NotificationMessage(username + " has resigned. " + winner + " wins!");
         connections.broadcast(null, notification, gameID);
-        endGame(gameID, color);
+        endGame(gameID);
     }
 
     /*private void exit(String visitorName) throws IOException {
