@@ -46,9 +46,9 @@ public class WebSocketHandler {
                 MakeMoveCommand moveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
                 makeMove(username, session, color, command.getGameID(), game, moveCommand.getMove());
             } else if (command.getCommandType() == UserGameCommand.CommandType.LEAVE){
-                leave(username, session);
+                leave(username, color, command.getGameID());
             } else if (command.getCommandType() == UserGameCommand.CommandType.RESIGN){
-                resign(username, session);
+                resign(username, session, command.getGameID(), color);
             }
         } catch (DataAccessException ex){
             if (ex.getMessage().equals("Game does not exist")) {
@@ -61,9 +61,11 @@ public class WebSocketHandler {
 
     private void connect(String username, Session session, int gameID, GameData game, ChessGame.TeamColor teamColor) throws Exception {
         connections.add(username, session, gameID);
-        String color = teamColor.toString().toLowerCase();
-        if(color.isEmpty()){
+        String color;
+        if(teamColor == null){
             color = "observer";
+        } else {
+            color = teamColor.toString().toLowerCase();
         }
 
         var message = username + " has joined the game as " + color;
@@ -79,7 +81,7 @@ public class WebSocketHandler {
     private void makeMove(String username, Session session, ChessGame.TeamColor color, int gameID, GameData data, ChessMove move) throws Exception {
         try {
             ChessGame game = data.getGame();
-            if(color==null){
+            if(color == null){
                 sendError(session, "Error: you are observing this game, you cannot make any moves");
                 return;
             } else if (color != game.getTeamTurn()){
@@ -87,10 +89,13 @@ public class WebSocketHandler {
                 return;
             }
             game.makeMove(move);
-            String message = color + " makes a move";
+            data.setGame(game);
             new SQLGameDAO().updateGame(gameID, data);
+
             var gameMessage = new LoadGameMessage(data.getGame());
             connections.broadcast(null, gameMessage, gameID);
+
+            String message = color + " makes a move";
             var notification = new NotificationMessage(message);
             connections.broadcast(username, notification, gameID);
 
@@ -115,23 +120,53 @@ public class WebSocketHandler {
         if (game.isInCheckmate(otherColor)){
             var checkMateNotification = new NotificationMessage(otherUsername + " is in checkmate!");
             connections.broadcast(null, checkMateNotification, gameID);
-            //finish game
+            endGame(gameID, otherColor);
         } else if (game.isInStalemate(otherColor)){
             var stalemateNotification = new NotificationMessage(otherUsername + " is in stalemate!");
             connections.broadcast(null, stalemateNotification, gameID);
-            //finish game
+            endGame(gameID, otherColor);
         } else if (game.isInCheck(otherColor)){
             var checkNotification = new NotificationMessage(otherUsername + " is in check!");
             connections.broadcast(null, checkNotification, gameID);
         }
     }
 
-    private void leave(String username, Session session){
-
+    private void endGame(int gameID, ChessGame.TeamColor loserColor) throws Exception{
+        SQLGameDAO dao = new SQLGameDAO();
+        GameData data = dao.getGame(gameID);
+        ChessGame game = data.getGame();
+        game.closeGame();
+        data.setGame(game);
+        dao.updateGame(gameID, data);
+        NotificationMessage notification = new NotificationMessage(loserColor.toString().toLowerCase() + " wins!");
+        connections.broadcast(null, notification, gameID);
     }
 
-    private void resign(String username, Session session){
+    private void leave(String username, ChessGame.TeamColor color, int gameID) throws Exception{
+        connections.remove(username);
 
+        SQLGameDAO dao = new SQLGameDAO();
+        GameData data = dao.getGame(gameID);
+        if(color == ChessGame.TeamColor.WHITE){
+            data.setWhiteUsername(null);
+        } else if (color == ChessGame.TeamColor.BLACK){
+            data.setBlackUsername(null);
+        }
+        dao.updateGame(gameID, data);
+
+        NotificationMessage notification = new NotificationMessage(username + " has left the game.");
+        connections.broadcast(null, notification, gameID);
+    }
+
+    private void resign(String username, Session session, int gameID, ChessGame.TeamColor color) throws Exception{
+        if (color == null){
+            sendError(session, "Error: type 'leave' to stop observing the game");
+            return;
+        }
+
+        NotificationMessage notification = new NotificationMessage(username + " has resigned!");
+        connections.broadcast(null, notification, gameID);
+        endGame(gameID, color);
     }
 
     /*private void exit(String visitorName) throws IOException {

@@ -163,6 +163,8 @@ public class GameplayClient extends Client {
     public String resign() throws Exception{
         ws = new WebSocketFacade(this, this.serverURL, this.repl);
         ws.resign(this.authToken, this.game.gameID());
+
+        repl.client = new LoggedInClient(serverURL, repl, authToken);
         return "Successfully resigned from " + this.game.gameName();
     }
 
