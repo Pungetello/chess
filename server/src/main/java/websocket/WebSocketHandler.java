@@ -4,6 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import dataaccess.*;
 //import ui.ResponseException;
 import model.GameData;
@@ -24,6 +25,7 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
+
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         String username;
         GameData game;
@@ -41,7 +43,7 @@ public class WebSocketHandler {
             if (command.getCommandType() == UserGameCommand.CommandType.CONNECT) {
                 connect(username, session, command.getGameID(), game, color);
             }else if (command.getCommandType() == UserGameCommand.CommandType.MAKE_MOVE){
-                MakeMoveCommand moveCommand = (MakeMoveCommand) command;
+                MakeMoveCommand moveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
                 makeMove(username, session, color, command.getGameID(), game, moveCommand.getMove());
             } else if (command.getCommandType() == UserGameCommand.CommandType.LEAVE){
                 //do stuff
