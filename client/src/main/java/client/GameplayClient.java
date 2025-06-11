@@ -65,7 +65,7 @@ public class GameplayClient extends Client {
                 help - see a list of commands
                 show_board - display the current chessboard
                 change_colors <color scheme> - change the color scheme of the board.
-                    options: greyscale (default), vibrant.
+                    options: greyscale (default), vibrant, blues.
                 leave_game - exits the game
                 resign - forfeit the match
                 make_move <start> <end> <promotion piece>(optional) - move a piece
@@ -82,7 +82,7 @@ public class GameplayClient extends Client {
         ChessPosition start = parseCoords(tokens[1]);
         ChessPosition end = parseCoords(tokens[2]);
         ChessPiece.PieceType promotionPiece = null;
-        if(tokens[3] != null){
+        if(tokens.length == 4){
             try {
                 promotionPiece = parsePromotion(tokens[3].toUpperCase());
             } catch (Exception ex){
@@ -95,7 +95,7 @@ public class GameplayClient extends Client {
         ChessMove move = new ChessMove(start, end, promotionPiece);
         ws = new WebSocketFacade(this, this.serverURL, this.repl);
         ws.makeMove(this.authToken, this.game.gameID(), move);
-        return "Made move successfully";
+        return "Making move";
     }
 
     private ChessPosition parseCoords(String coord){
@@ -157,7 +157,7 @@ public class GameplayClient extends Client {
         ws.leave(this.authToken, this.game.gameID());
 
         repl.client = new LoggedInClient(serverURL, repl, authToken); // update for websocket
-        return "Successfully exited " + game.gameName();
+        return "Leaving " + game.gameName();
     }
 
     public String resign() throws Exception{
@@ -165,7 +165,7 @@ public class GameplayClient extends Client {
         ws.resign(this.authToken, this.game.gameID());
 
         repl.client = new LoggedInClient(serverURL, repl, authToken);
-        return "Successfully resigned from " + this.game.gameName();
+        return "Resigning from " + this.game.gameName();
     }
 
     public String changeColors(String[] tokens){
@@ -186,6 +186,13 @@ public class GameplayClient extends Client {
             lightSquare = SET_BG_COLOR_MAGENTA;
             coordsColor = SET_TEXT_COLOR_YELLOW;
             whiteColor = SET_TEXT_COLOR_RED;
+            blackColor = SET_TEXT_COLOR_BLUE;
+        } else if(colorScheme.equals("blues")){
+            bgColor = RESET_BG_COLOR;
+            darkSquare = SET_BG_COLOR_TEAL;
+            lightSquare = SET_BG_COLOR_CYAN;
+            coordsColor = SET_TEXT_COLOR_BLUE;
+            whiteColor = SET_TEXT_COLOR_WHITE;
             blackColor = SET_TEXT_COLOR_BLUE;
         } else {
             return "Color scheme not recognized. Options: greyscale, vibrant";
