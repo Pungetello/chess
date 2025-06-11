@@ -6,6 +6,7 @@ import repl.Repl;
 import results.Game;
 import ui.ServerFacade;
 import websocket.WebSocketFacade;
+import websocket.messages.NotificationMessage;
 
 import static ui.EscapeSequences.*;
 
@@ -35,6 +36,7 @@ public class GameplayClient extends Client {
 
         ws = new WebSocketFacade(this, this.serverURL, this.repl);
         ws.connect(this.authToken, this.game.gameID());
+        //showBoard(board);
     }
 
     public String eval(String line) throws Exception {
@@ -200,12 +202,14 @@ public class GameplayClient extends Client {
         return "Color scheme of board successfully changed to " + colorScheme;
     }
 
-    public String showBoard(ChessBoard board) {
+    public void showBoard(ChessBoard board) {
+        String prettyBoard;
         if (playerColor.equals("BLACK")){
-            return printBlackBoard(board);
+            prettyBoard = printBlackBoard(board);
         } else {
-            return printWhiteBoard(board);
+            prettyBoard = printWhiteBoard(board);
         }
+        repl.notify(new NotificationMessage(prettyBoard));
     }
 
     private String printBlackBoard(ChessBoard board){

@@ -100,7 +100,7 @@ public class WebSocketHandler {
             var gameMessage = new LoadGameMessage(data.getGame());
             connections.broadcast(null, gameMessage, gameID);
 
-            String message = color + " makes a move";
+            String message = username + " moves "; // make it have more info
             var notification = new NotificationMessage(message);
             connections.broadcast(username, notification, gameID);
 
