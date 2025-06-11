@@ -51,10 +51,13 @@ public class GameplayClient extends Client {
             return changeColors(tokens);
         } else if (command.equals("leave_game")) {
             return leaveGame();
-        }else if (command.equals("resign")){
+        }else if (command.equals("resign")){ //add confirmation
             return resign();
-        } else if (command.equals("make_move")){
+        } else if (command.equals("move")){
             return makeMove(tokens);
+        } else if (command.equals("highlight_legal_moves")){
+            highlightMoves(tokens); //make this
+            return "";
         } else {
             return "Command not recognized. Type 'help' for list of commands.";
         }
@@ -64,15 +67,17 @@ public class GameplayClient extends Client {
         return """
                 
                 //o\\o//o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\o//o\\
+                
                 help - see a list of commands
                 show_board - display the current chessboard
                 change_colors <color scheme> - change the color scheme of the board.
                     options: greyscale (default), vibrant, blues.
                 leave_game - exits the game
                 resign - forfeit the match
-                make_move <start> <end> <promotion piece>(optional) - move a piece
+                move <start> <end> <promotion piece>(optional) - move a piece
+                highlight_legal_moves <position> - highlight all squares a piece can
+                    legally move to
                 
-                More commands to come once gameplay is implemented!
                 \\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//
                 """;
     }
@@ -166,7 +171,6 @@ public class GameplayClient extends Client {
         ws = new WebSocketFacade(this, this.serverURL, this.repl);
         ws.resign(this.authToken, this.game.gameID());
 
-        repl.client = new LoggedInClient(serverURL, repl, authToken);
         return "Resigning from " + this.game.gameName();
     }
 
