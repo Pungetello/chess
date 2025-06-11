@@ -20,7 +20,7 @@ public class WebSocketFacade extends Endpoint {
     GameplayClient client;
 
 
-    public WebSocketFacade(GameplayClient client, String url, NotificationHandler notificationHandler) throws ResponseException { // Wherever this is created, it will need to pass in a notification handler, which can be the REPL, as that's what notifies people.
+    public WebSocketFacade(GameplayClient client, String url, NotificationHandler notificationHandler) throws ResponseException {
         try {
             this.client = client;
             url = url.replace("http", "ws");
