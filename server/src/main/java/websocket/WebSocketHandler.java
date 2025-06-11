@@ -34,9 +34,9 @@ public class WebSocketHandler {
             username = new SQLAuthDAO().getAuth(command.getAuthToken()).getUsername();
             game = new SQLGameDAO().getGame(command.getGameID());
             color = null;
-            if (game.getWhiteUsername().equals(username)) {
+            if (game.getWhiteUsername() != null && game.getWhiteUsername().equals(username)) {
                 color = ChessGame.TeamColor.WHITE;
-            } else if (game.getBlackUsername().equals(username)) {
+            } else if (game.getBlackUsername() != null && game.getBlackUsername().equals(username)) {
                 color = ChessGame.TeamColor.BLACK;
             }
 
