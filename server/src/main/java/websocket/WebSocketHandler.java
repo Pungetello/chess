@@ -2,11 +2,10 @@ package websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import dataaccess.*;
-//import ui.ResponseException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -70,7 +69,7 @@ public class WebSocketHandler {
 
         var message = username + " has joined the game as " + color;
         var notification = new NotificationMessage(message);
-        connections.broadcast(username, notification, gameID); //notify all in game, excluding the user
+        connections.broadcast(username, notification, gameID);
         ChessGame gameBoard = game.getGame();
 
         LoadGameMessage response = new LoadGameMessage(gameBoard);
@@ -100,7 +99,8 @@ public class WebSocketHandler {
             var gameMessage = new LoadGameMessage(data.getGame());
             connections.broadcast(null, gameMessage, gameID);
 
-            String message = username + " moves "; // make it have more info
+            String message = username + " moves " + data.getGame().getBoard().getPiece(move.getEndPosition()).getPieceType().toString().toLowerCase() +
+                    " from " + parseCoordBack(move.getStartPosition()) + " to " + parseCoordBack(move.getEndPosition());
             var notification = new NotificationMessage(message);
             connections.broadcast(username, notification, gameID);
 
@@ -109,6 +109,32 @@ public class WebSocketHandler {
         } catch (InvalidMoveException ex){
             sendError(session, "Error: invalid move");
         }
+    }
+
+    private String parseCoordBack(ChessPosition position){
+        int row = position.getRow();
+        int col = position.getColumn();
+        String rowString = String.valueOf(row);
+
+            String colString = "";
+            if (col == 1) {
+                colString = "a";
+            } else if (col == 2) {
+                colString = "b";
+            } else if (col == 3) {
+                colString = "c";
+            } else if (col == 4) {
+                colString = "d";
+            } else if (col == 5) {
+                colString = "e";
+            } else if (col == 6) {
+                colString = "f";
+            } else if (col == 7) {
+                colString = "g";
+            } else if (col == 8) {
+                colString = "h";
+            }
+            return colString + rowString;
     }
 
     private void checkSpecialConditions(ChessGame game, ChessGame.TeamColor color, int gameID) throws Exception{
@@ -178,7 +204,7 @@ public class WebSocketHandler {
         }
 
         String winner = "Black";
-        if (color == ChessGame.TeamColor.WHITE){
+        if (color == ChessGame.TeamColor.BLACK){
             winner = "White";
         }
 

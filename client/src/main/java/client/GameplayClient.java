@@ -36,7 +36,6 @@ public class GameplayClient extends Client {
 
         ws = new WebSocketFacade(this, this.serverURL, this.repl);
         ws.connect(this.authToken, this.game.gameID());
-        //showBoard(board);
     }
 
     public String eval(String line) throws Exception {
@@ -46,7 +45,8 @@ public class GameplayClient extends Client {
         if (command.equals("help")){
             return help();
         } else if (command.equals("show_board")) {
-            return showBoard(board);
+            showBoard(board);
+            return "";
         } else if (command.equals("change_colors")){
             return changeColors(tokens);
         } else if (command.equals("leave_game")) {
@@ -158,7 +158,7 @@ public class GameplayClient extends Client {
         ws = new WebSocketFacade(this, this.serverURL, this.repl);
         ws.leave(this.authToken, this.game.gameID());
 
-        repl.client = new LoggedInClient(serverURL, repl, authToken); // update for websocket
+        repl.client = new LoggedInClient(serverURL, repl, authToken);
         return "Leaving " + game.gameName();
     }
 
@@ -214,7 +214,8 @@ public class GameplayClient extends Client {
 
     private String printBlackBoard(ChessBoard board){
         StringBuilder result = new StringBuilder();
-        result.append(bgColor)
+        result.append("\n")
+                .append(bgColor)
                 .append(coordsColor)
                 .append(blackXAxis());
         for(int i=1; i <= 8; i++){
@@ -228,7 +229,8 @@ public class GameplayClient extends Client {
 
     private String printWhiteBoard(ChessBoard board){
         StringBuilder result = new StringBuilder();
-        result.append(bgColor)
+        result.append("\n")
+                .append(bgColor)
                 .append(coordsColor)
                 .append(whiteXAxis());
         for(int i=8; i > 0; i--){
