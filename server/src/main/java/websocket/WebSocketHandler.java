@@ -29,15 +29,15 @@ public class WebSocketHandler {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         String username;
         GameData game;
-        String color;
+        ChessGame.TeamColor color;
         try {
             username = new SQLAuthDAO().getAuth(command.getAuthToken()).getUsername();
             game = new SQLGameDAO().getGame(command.getGameID());
-            color = "observer";
+            color = null;
             if (game.getWhiteUsername().equals(username)) {
-                color = "white";
+                color = ChessGame.TeamColor.WHITE;
             } else if (game.getBlackUsername().equals(username)) {
-                color = "black";
+                color = ChessGame.TeamColor.BLACK;
             }
 
             if (command.getCommandType() == UserGameCommand.CommandType.CONNECT) {
@@ -46,9 +46,9 @@ public class WebSocketHandler {
                 MakeMoveCommand moveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
                 makeMove(username, session, color, command.getGameID(), game, moveCommand.getMove());
             } else if (command.getCommandType() == UserGameCommand.CommandType.LEAVE){
-                //do stuff
+                leave(username, session);
             } else if (command.getCommandType() == UserGameCommand.CommandType.RESIGN){
-                //do stuff
+                resign(username, session);
             }
         } catch (DataAccessException ex){
             if (ex.getMessage().equals("Game does not exist")) {
@@ -59,7 +59,7 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect(String username, Session session, int gameID, GameData game, String color) throws Exception {
+    private void connect(String username, Session session, int gameID, GameData game, ChessGame.TeamColor color) throws Exception {
         connections.add(username, session, gameID);
 
             var message = username + " has joined the game as " + color;
@@ -72,9 +72,17 @@ public class WebSocketHandler {
             session.getRemote().sendString(new Gson().toJson(response));
     }
 
-    private void makeMove(String username, Session session, String color, int gameID, GameData data, ChessMove move) throws Exception {
+    private void makeMove(String username, Session session, ChessGame.TeamColor color, int gameID, GameData data, ChessMove move) throws Exception {
         try {
-            data.getGame().makeMove(move);
+            ChessGame game = data.getGame();
+            if(color==null){
+                sendError(session, "Error: you are observing this game, you cannot make any moves");
+                return;
+            } else if (color != game.getTeamTurn()){
+                sendError(session, "Error: it is not your turn");
+                return;
+            }
+            game.makeMove(move);
             String message = color + " makes a move";
             new SQLGameDAO().updateGame(gameID, data);
             var gameMessage = new LoadGameMessage(data.getGame());
@@ -82,9 +90,40 @@ public class WebSocketHandler {
             var notification = new NotificationMessage(message);
             connections.broadcast(username, notification, gameID);
 
+            checkSpecialConditions(game, color, gameID);
+
         } catch (InvalidMoveException ex){
             sendError(session, "Error: invalid move");
         }
+    }
+
+    private void checkSpecialConditions(ChessGame game, ChessGame.TeamColor color, int gameID) throws Exception{
+        ChessGame.TeamColor otherTeam = ChessGame.TeamColor.WHITE;
+        if(color == ChessGame.TeamColor.WHITE){
+            otherTeam = ChessGame.TeamColor.BLACK;
+        }
+
+        if (game.isInCheckmate(otherTeam)){
+            var checkMateNotification = new NotificationMessage(otherTeam + " is in checkmate!");
+            connections.broadcast(null, checkMateNotification, gameID);
+            //finish game
+        } else if (game.isInStalemate(otherTeam)){
+            var stalemateNotification = new NotificationMessage(otherTeam + " is in stalemate!");
+            connections.broadcast(null, stalemateNotification, gameID);
+            //finish game
+        } else if (game.isInCheck(otherTeam)){
+            var checkNotification = new NotificationMessage(otherTeam + " is in check!"); //maybe this is unproffessional to have, but as a bad chess player I'd want it
+            connections.broadcast(null, checkNotification, gameID);
+        }
+
+    }
+
+    private void leave(String username, Session session){
+
+    }
+
+    private void resign(String username, Session session){
+
     }
 
     /*private void exit(String visitorName) throws IOException {

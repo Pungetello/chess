@@ -34,20 +34,16 @@ public class WebSocketFacade extends Endpoint {
             //set message handler
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
 
-                Gson gson = new GsonBuilder()
-                        .registerTypeAdapter(ServerMessage.class, new ServerMessageDeserializer())
-                        .create();
-
                 @Override
                 public void onMessage(String message) {
-                    ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
+                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
 
-                    if (serverMessage instanceof NotificationMessage) {
+                    if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
                         notificationHandler.notify((NotificationMessage) serverMessage);
                     } else if (serverMessage instanceof LoadGameMessage) {
                         client.showBoard(((LoadGameMessage) serverMessage).getGame().getBoard());
-                    } else if (serverMessage instanceof ErrorMessage) {
-                        notificationHandler.notify(new NotificationMessage(((ErrorMessage) serverMessage).getMessage()));//what's even the point of having two classes.
+                    } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+                        notificationHandler.notify(new NotificationMessage(serverMessage.g());//what's even the point of having two classes.
                     }
                 }
             });

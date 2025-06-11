@@ -48,14 +48,12 @@ public class GameplayClient extends Client {
             return showBoard(startingBoard);
         } else if (command.equals("change_colors")){
             return changeColors(tokens);
-        } else if (command.equals("exit_game")) {
-            return exitGame();
+        } else if (command.equals("leave_game")) {
+            return leaveGame();
         }else if (command.equals("resign")){
-            //return resign();
+            return resign();
         } else if (command.equals("make_move")){
             return makeMove(tokens);
-        } else if (command.equals("quit")){
-            return "quit";
         } else {
             return "Command not recognized. Type 'help' for list of commands.";
         }
@@ -69,10 +67,9 @@ public class GameplayClient extends Client {
                 show_board - display the current chessboard
                 change_colors <color scheme> - change the color scheme of the board.
                     options: greyscale (default), vibrant.
-                exit_game - exits the game
+                leave_game - exits the game
                 resign - forfeit the match
-                make_move <start> <end> - move a piece if it is your turn
-                quit - quit the program
+                make_move <start> <end> <promotion piece>(optional) - move a piece
                 
                 More commands to come once gameplay is implemented!
                 \\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//o\\o//
@@ -80,15 +77,23 @@ public class GameplayClient extends Client {
     }
 
     public String makeMove(String[] tokens) throws Exception {
-        if(tokens.length != 3){
-            return "Usage: make_move <start> <end>";
+        if(tokens.length != 3 && tokens.length != 4){
+            return "Usage: make_move <start> <end> <promotion piece>(if needed)";
         }
         ChessPosition start = parseCoords(tokens[1]);
         ChessPosition end = parseCoords(tokens[2]);
+        ChessPiece.PieceType promotionPiece = null;
+        if(tokens[3] != null){
+            try {
+                promotionPiece = parsePromotion(tokens[3].toUpperCase());
+            } catch (Exception ex){
+                return "Promotion piece should be: rook, bishop, knight, or queen. If not promoting a pawn, leave blank.";
+            }
+        }
         if (start == null || end == null){
             return "Coords should be letter-number pairs, i.e a7 b5";
         }
-        ChessMove move = new ChessMove(start, end, null); //need to add pawn promotion feature
+        ChessMove move = new ChessMove(start, end, promotionPiece);
         ws = new WebSocketFacade(this, this.serverURL, this.repl);
         ws.makeMove(this.authToken, this.game.gameID(), move);
         return "Made move successfully";
@@ -128,9 +133,29 @@ public class GameplayClient extends Client {
             }
     }
 
-    public String exitGame() throws Exception{
-        repl.client = new LoggedInClient(serverURL, repl, authToken);
+    private ChessPiece.PieceType parsePromotion(String promotionString) throws Exception{
+        ChessPiece.PieceType result;
+        if(promotionString.equals("ROOK")){
+            result = ChessPiece.PieceType.ROOK;
+        } else if(promotionString.equals("BISHOP")){
+            result = ChessPiece.PieceType.BISHOP;
+        } else if(promotionString.equals("KNIGHT")){
+            result = ChessPiece.PieceType.KNIGHT;
+        } else if(promotionString.equals("QUEEN")){
+            result = ChessPiece.PieceType.QUEEN;
+        } else {
+            throw new Exception("invalid promotion piece");
+        }
+        return result;
+    }
+
+    public String leaveGame() throws Exception{
+        repl.client = new LoggedInClient(serverURL, repl, authToken); // update for websocket
         return "Successfully exited game " + game.gameName();
+    }
+
+    public String resign() {
+        return "Not yet implemented";
     }
 
     public String changeColors(String[] tokens){
