@@ -46,7 +46,7 @@ public class WebSocketHandler {
                 MakeMoveCommand moveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
                 makeMove(username, session, color, command.getGameID(), game, moveCommand.getMove());
             } else if (command.getCommandType() == UserGameCommand.CommandType.LEAVE){
-                leave(username, color, command.getGameID());
+                leave(username, session, color, command.getGameID());
             } else if (command.getCommandType() == UserGameCommand.CommandType.RESIGN){
                 resign(username, session, command.getGameID(), color);
             }
@@ -84,7 +84,12 @@ public class WebSocketHandler {
             if(color == null){
                 sendError(session, "Error: you are observing this game, you cannot make any moves");
                 return;
-            } else if (color != game.getTeamTurn()){
+            }
+            if (game.isOver()){
+                sendError(session, "Error: game has ended");
+                return;
+            }
+            if (color != game.getTeamTurn()){
                 sendError(session, "Error: it is not your turn");
                 return;
             }
@@ -140,7 +145,12 @@ public class WebSocketHandler {
         dao.updateGame(gameID, data);
     }
 
-    private void leave(String username, ChessGame.TeamColor color, int gameID) throws Exception{
+    private void leave(String username, Session session, ChessGame.TeamColor color, int gameID) throws Exception{
+        if(!connections.contains(username)){
+            sendError(session, "Error: you have left the game");
+            return;
+        }
+
         connections.remove(username);
 
         SQLGameDAO dao = new SQLGameDAO();
@@ -161,6 +171,12 @@ public class WebSocketHandler {
             sendError(session, "Error: type 'leave' to stop observing the game");
             return;
         }
+
+        if (new SQLGameDAO().getGame(gameID).getGame().isOver()){
+            sendError(session, "Error: game has ended");
+            return;
+        }
+
         String winner = "Black";
         if (color == ChessGame.TeamColor.WHITE){
             winner = "White";
@@ -170,23 +186,6 @@ public class WebSocketHandler {
         connections.broadcast(null, notification, gameID);
         endGame(gameID);
     }
-
-    /*private void exit(String visitorName) throws IOException {
-        connections.remove(visitorName);
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new Notification(Notification.Type.DEPARTURE, message);
-        connections.broadcast(visitorName, notification);
-    }
-
-    public void makeNoise(String petName, String sound) throws ResponseException {
-        try {
-            var message = String.format("%s says %s", petName, sound);
-            var notification = new Notification(Notification.Type.NOISE, message);
-            connections.broadcast("", notification);
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
-        }
-    }*/
 
     private void sendError(Session session, String errorMessage) throws Exception{
         ErrorMessage error = new ErrorMessage(errorMessage);

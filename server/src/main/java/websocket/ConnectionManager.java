@@ -16,8 +16,12 @@ public class ConnectionManager {
         connections.put(username, connection);
     }
 
-    public void remove(String visitorName) {
-        connections.remove(visitorName);
+    public Boolean contains(String username){
+        return connections.containsKey(username);
+    }
+
+    public void remove(String username) {
+        connections.remove(username);
     }
 
     public void broadcast(String excludeUser, ServerMessage notification, int gameID) throws IOException {
