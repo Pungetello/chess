@@ -27,7 +27,10 @@ public class GameplayClient extends Client {
     String coordsColor = RESET_TEXT_COLOR;
     String whiteColor = SET_TEXT_COLOR_WHITE;
     String blackColor = SET_TEXT_COLOR_BLACK;
+    String highlightDarkSquare = SET_BG_COLOR_DARK_GREEN;
+    String highlightLightSquare = SET_BG_COLOR_GREEN;
     ChessBoard board = new ChessBoard();
+    Boolean confirmed = false;
 
     public GameplayClient(String serverURL, Repl repl, String authToken, String playerColor, Game game) throws Exception{
         facade = new ServerFacade(serverURL);
@@ -48,8 +51,7 @@ public class GameplayClient extends Client {
         if (command.equals("help")){
             return help();
         } else if (command.equals("show_board")) {
-            showBoard(board);
-            return "";
+            return showBoard(board, new LinkedList<ChessMove>());
         } else if (command.equals("change_colors")){
             return changeColors(tokens);
         } else if (command.equals("leave_game")) {
@@ -59,14 +61,14 @@ public class GameplayClient extends Client {
         } else if (command.equals("move")){
             return makeMove(tokens);
         } else if (command.equals("highlight_legal_moves")){
-            highlightMoves(tokens); //make this
-            return "";
+            return highlightMoves(tokens);
         } else {
             return "Command not recognized. Type 'help' for list of commands.";
         }
     }
 
     public String help() {
+        confirmed = false;
         return """
                 
                 //o\\o//o\\o//o\\o//o\\COMMANDS//o\\o//o\\o//o\\o//o\\
@@ -86,6 +88,7 @@ public class GameplayClient extends Client {
     }
 
     public String makeMove(String[] tokens) throws Exception {
+        confirmed = false;
         if(tokens.length != 3 && tokens.length != 4){
             return "Usage: make_move <start> <end> <promotion piece>(if needed)";
         }
@@ -171,13 +174,19 @@ public class GameplayClient extends Client {
     }
 
     public String resign() throws Exception{
-        ws = new WebSocketFacade(this, this.serverURL, this.repl);
-        ws.resign(this.authToken, this.game.gameID());
+        if(!confirmed){
+            confirmed = true;
+            return "Are you sure you want to resign and forfeit the game? Resign again to confirm.";
+        } else {
+            ws = new WebSocketFacade(this, this.serverURL, this.repl);
+            ws.resign(this.authToken, this.game.gameID());
 
-        return "Resigning from " + this.game.gameName();
+            return "Resigning from " + this.game.gameName();
+        }
     }
 
     public String changeColors(String[] tokens){
+        confirmed = false;
         if(tokens.length != 2){
             return "Usage: change_colors <color scheme>";
         }
@@ -189,6 +198,8 @@ public class GameplayClient extends Client {
             coordsColor = RESET_TEXT_COLOR;
             whiteColor = SET_TEXT_COLOR_WHITE;
             blackColor = SET_TEXT_COLOR_BLACK;
+            highlightDarkSquare = SET_BG_COLOR_DARK_GREEN;
+            highlightLightSquare = SET_BG_COLOR_GREEN;
         } else if(colorScheme.equals("vibrant")){
             bgColor = RESET_BG_COLOR;
             darkSquare = SET_BG_COLOR_CYAN;
@@ -196,13 +207,17 @@ public class GameplayClient extends Client {
             coordsColor = SET_TEXT_COLOR_YELLOW;
             whiteColor = SET_TEXT_COLOR_RED;
             blackColor = SET_TEXT_COLOR_BLUE;
+            highlightDarkSquare = SET_BG_COLOR_WHITE;
+            highlightLightSquare = SET_BG_COLOR_WHITE;
         } else if(colorScheme.equals("blues")){
             bgColor = RESET_BG_COLOR;
-            darkSquare = SET_BG_COLOR_TEAL;
+            darkSquare = SET_BG_COLOR_BLUE;
             lightSquare = SET_BG_COLOR_CYAN;
             coordsColor = SET_TEXT_COLOR_BLUE;
             whiteColor = SET_TEXT_COLOR_WHITE;
-            blackColor = SET_TEXT_COLOR_BLUE;
+            blackColor = SET_TEXT_COLOR_BLACK;
+            highlightDarkSquare = SET_BG_COLOR_TEAL;
+            highlightLightSquare = SET_BG_COLOR_TEAL;
         } else {
             return "Color scheme not recognized. Options: greyscale, vibrant";
         }
@@ -210,6 +225,7 @@ public class GameplayClient extends Client {
     }
 
     public String highlightMoves(String[] tokens){
+        confirmed = false;
         if (tokens.length != 2){
             return "Usage: highlight_legal_moves <position>";
         }
@@ -219,28 +235,37 @@ public class GameplayClient extends Client {
         }
         ChessGame chessGame = new ChessGame();
         chessGame.setBoard(board);
-        Collection<ChessMove> validMoves = chessGame.validMoves(position);
+        Collection<ChessMove> validMoves;
+        try {
+            validMoves = chessGame.validMoves(position);
+        } catch (Exception ex){
+            validMoves = new LinkedList<ChessMove>();
+        }
+        showBoard(board, validMoves);
         //pass in to showBoard, alter showBoard to accept it and other calls to pass in an empty collection
+        return "";
     }
 
-    public void showBoard(ChessBoard board) {
+    public String showBoard(ChessBoard board, Collection<ChessMove> validMoves) {
+        confirmed = false;
         String prettyBoard;
         if (playerColor.equals("BLACK")){
-            prettyBoard = printBlackBoard(board);
+            prettyBoard = printBlackBoard(board, validMoves);
         } else {
-            prettyBoard = printWhiteBoard(board);
+            prettyBoard = printWhiteBoard(board, validMoves);
         }
         repl.notify(new NotificationMessage(prettyBoard));
+        return "";
     }
 
-    private String printBlackBoard(ChessBoard board){
+    private String printBlackBoard(ChessBoard board, Collection<ChessMove> validMoves) {
         StringBuilder result = new StringBuilder();
         result.append("\n")
                 .append(bgColor)
                 .append(coordsColor)
                 .append(blackXAxis());
         for(int i=1; i <= 8; i++){
-            result.append(rowAsString(i, board, ChessGame.TeamColor.BLACK));
+            result.append(rowAsString(i, board, ChessGame.TeamColor.BLACK, validMoves));
         }
         result.append(blackXAxis())
                 .append(RESET_BG_COLOR)
@@ -248,14 +273,14 @@ public class GameplayClient extends Client {
         return result.toString();
     }
 
-    private String printWhiteBoard(ChessBoard board){
+    private String printWhiteBoard(ChessBoard board, Collection<ChessMove> validMoves){
         StringBuilder result = new StringBuilder();
         result.append("\n")
                 .append(bgColor)
                 .append(coordsColor)
                 .append(whiteXAxis());
         for(int i=8; i > 0; i--){
-            result.append(rowAsString(i, board, ChessGame.TeamColor.WHITE));
+            result.append(rowAsString(i, board, ChessGame.TeamColor.WHITE, validMoves));
         }
         result.append(whiteXAxis())
                 .append(RESET_BG_COLOR)
@@ -271,17 +296,17 @@ public class GameplayClient extends Client {
         return "    h\u2003 g\u2003 f\u2003 e\u2003 d\u2003 c\u2003 b\u2003 a\u2003   \n";
     }
 
-    private String rowAsString(int row, ChessBoard board, ChessGame.TeamColor playerColor){
+    private String rowAsString(int row, ChessBoard board, ChessGame.TeamColor playerColor, Collection<ChessMove> validMoves){
         StringBuilder result = new StringBuilder();
         String label = bgColor + coordsColor + " " + row + " ";
         result.append(label);
         if(playerColor.equals(ChessGame.TeamColor.WHITE)) {
             for (int i = 1; i <= 8; i++) {
-                result.append(squareAsString(row, i, board));
+                result.append(squareAsString(row, i, board, validMoves));
             }
         } else {
             for (int i = 8; i >= 1; i--) {
-                result.append(squareAsString(row, i, board));
+                result.append(squareAsString(row, i, board, validMoves));
             }
         }
         result.append(label);
@@ -289,12 +314,28 @@ public class GameplayClient extends Client {
         return result.toString();
     }
 
-    private String squareAsString(int row, int col, ChessBoard board){
+    private String squareAsString(int row, int col, ChessBoard board, Collection<ChessMove> validMoves){
         StringBuilder result = new StringBuilder();
+        Boolean isValid = false;
+
+        for(ChessMove move : validMoves){
+            if(move.getEndPosition().getRow() == row && move.getEndPosition().getColumn() == col){
+                isValid = true;
+            }
+        }
+
         if ((row + col) % 2 == 0) {
-            result.append(darkSquare);
+            if(isValid){
+                result.append(highlightDarkSquare);
+            } else {
+                result.append(darkSquare);
+            }
         } else {
-            result.append(lightSquare);
+            if(isValid){
+                result.append(highlightLightSquare);
+            } else {
+                result.append(lightSquare);
+            }
         }
         ChessPiece piece = board.getPiece(new ChessPosition(row, col));
         if (piece == null) {

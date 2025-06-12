@@ -11,6 +11,8 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.LinkedList;
 
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
@@ -43,7 +45,7 @@ public class WebSocketFacade extends Endpoint {
                     } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
                         LoadGameMessage loadGame = new Gson().fromJson(message, LoadGameMessage.class);
                         client.setBoard(loadGame.getGame().getBoard());
-                        client.showBoard(loadGame.getGame().getBoard());
+                        client.showBoard(loadGame.getGame().getBoard(), new LinkedList<ChessMove>());
                     } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
                         ErrorMessage error = new Gson().fromJson(message, ErrorMessage.class);
                         notificationHandler.notify(new NotificationMessage(error.getMessage()));//what's even the point of having two classes.
