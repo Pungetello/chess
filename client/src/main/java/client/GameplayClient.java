@@ -8,6 +8,9 @@ import ui.ServerFacade;
 import websocket.WebSocketFacade;
 import websocket.messages.NotificationMessage;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import static ui.EscapeSequences.*;
 
 public class GameplayClient extends Client {
@@ -204,6 +207,20 @@ public class GameplayClient extends Client {
             return "Color scheme not recognized. Options: greyscale, vibrant";
         }
         return "Color scheme of board successfully changed to " + colorScheme;
+    }
+
+    public String highlightMoves(String[] tokens){
+        if (tokens.length != 2){
+            return "Usage: highlight_legal_moves <position>";
+        }
+        ChessPosition position = parseCoords(tokens[1]);
+        if (position == null){
+            return "Coords should be letter-number pairs, i.e a7 b5";
+        }
+        ChessGame chessGame = new ChessGame();
+        chessGame.setBoard(board);
+        Collection<ChessMove> validMoves = chessGame.validMoves(position);
+        //pass in to showBoard, alter showBoard to accept it and other calls to pass in an empty collection
     }
 
     public void showBoard(ChessBoard board) {
